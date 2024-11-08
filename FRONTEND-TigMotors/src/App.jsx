@@ -1,18 +1,38 @@
-import { Button } from "@radix-ui/themes/dist/cjs/index.js"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LandingView from "./views/public/Landing/LandingView";
+import PrivateRoute from "./routes/PrivateRoute";
+import LoginView from "./views/public/Login/LoginView";
 
-function App() {
+const App = () => {
 
   return (
-    <>
-      <h1 className='texto-bold uppercase text-cyan-700 text-3x1'>
-        hola mundo
-      </h1>
-      <Button size="1" variant="soft">
-        Boton 1
-	    </Button>
-       
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<LandingView/>}/>
+        <Route path="/login" element={<LoginView/>}/>
+        <Route path="/Register" element={<h3>Register</h3>}/>
+        <Route path="/{id}"/>
+        <Route element={<PrivateRoute/>}>
+          <Route path="/admin" element={<h4>admin</h4>}/>
+        </Route>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        <Route path="*" element={<h1>No encontrado</h1>}/>
+      </Routes>
+    </BrowserRouter>
+    
   )
 }
 
-export default App
+export default App;
