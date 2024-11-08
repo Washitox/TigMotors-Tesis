@@ -1,9 +1,8 @@
-import React from 'react'
-import LoginForm from './ui/LoginForm'
+import LoginForm from "./ui/LoginForm"
 
 export default function LoginView() {
   return (
-    <div>
+    <div className="bg-gray-900 min-h-screen">
       <LoginForm/>
     </div>
   )
