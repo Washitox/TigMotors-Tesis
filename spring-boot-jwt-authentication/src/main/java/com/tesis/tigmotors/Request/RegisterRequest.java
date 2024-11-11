@@ -15,47 +15,47 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterRequest {
 
-    @NotBlank(message = "Username cannot be blank")
-    @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9._-]+$", message = "Username can only contain letters, numbers, '.', '_', and '-'")
+    @NotBlank(message = "El nombre de usuario no puede quedar en blanco")
+    @Size(min = 5, max = 20, message = "El nombre de usuario debe tener entre 5 y 20 caracteres")
+    @Pattern(regexp = "^[a-zA-Z0-9._-]+$", message = "El nombre de usuario solo puede contener letras, números, '.', '_' y '-'")
     String username;
 
-    @NotBlank(message = "Password cannot be blank")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @NotBlank(message = "La contraseña no puede estar en blanco")
+    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     @Pattern(
             regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$",
-            message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
+            message = "La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un dígito y un carácter especial."
     )
 
-    @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters long")
+    @Size(min = 8, max = 20, message = "La contraseña debe tener entre 8 y 20 caracteres.")
     @Column(nullable = false)
     private String password;
 
-    @NotBlank(message = "First name cannot be blank")
-    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
-    @Pattern(regexp = "^[A-Za-zÀ-ÿ]+(\\s[A-Za-zÀ-ÿ]+)*$", message = "First name can only contain letters and single spaces between words")
+    @NotBlank(message = "El nombre no puede quedar en blanco")
+    @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres.")
+    @Pattern(regexp = "^[A-Za-zÀ-ÿ]+(\\s[A-Za-zÀ-ÿ]+)*$", message = "El nombre solo puede contener letras y espacios simples entre palabras.")
     String firstname;
 
-    @NotBlank(message = "Last name cannot be blank")
-    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
-    @Pattern(regexp = "^[A-Za-zÀ-ÿ]+(\\s[A-Za-zÀ-ÿ]+)*$", message = "Last name can only contain letters and single spaces between words")
+    @NotBlank(message = "El apellido no puede quedar en blanco")
+    @Size(min = 2, max = 50, message = "El apellido debe tener entre 2 y 50 caracteres.")
+    @Pattern(regexp = "^[A-Za-zÀ-ÿ]+(\\s[A-Za-zÀ-ÿ]+)*$", message = "El apellido solo puede contener letras y espacios simples entre palabras.")
     String lastname;
 
 
-    @NotBlank(message = "Email cannot be blank")
+    @NotBlank(message = "El correo electrónico no puede estar en blanco")
     @Pattern(
             regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$",
-            message = "Invalid email format"
+            message = "Formato de correo electrónico no válido"
     )
-    @NotBlank(message = "Country cannot be blank")
+    @NotBlank(message = "El correo no puede estar en blanco")
     String email;
 
-    @NotBlank(message = "Country cannot be blank")
+    @NotBlank(message = "El país no puede estar en blanco")
     String country;
 
     @Pattern(
             regexp = "^\\+593\\d{9}$",
-            message = "Phone number must start with +593 and be followed by exactly 9 digits"
+            message = "El número de teléfono debe comenzar con +593 y estar seguido de exactamente 9 dígitos"
     )
     String phoneNumber;
 }

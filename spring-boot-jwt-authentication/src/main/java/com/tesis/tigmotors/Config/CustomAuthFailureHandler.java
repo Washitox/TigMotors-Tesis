@@ -16,6 +16,6 @@ public class CustomAuthFailureHandler implements AuthenticationFailureHandler {
                                         AuthenticationException exception) throws IOException, ServletException {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("{\"status\":\"error\", \"message\":\"Authentication failed\"}");
+        response.getWriter().write("{\"Estado\":\"Error\", \"Mensaje\":\"Fallo de Autenticacion\"}");
     }
 }

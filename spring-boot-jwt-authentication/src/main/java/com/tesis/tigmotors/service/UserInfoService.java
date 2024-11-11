@@ -21,7 +21,7 @@ public class UserInfoService {
 
         // Cargar el usuario desde la base de datos
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("models not found"));
+                .orElseThrow(() -> new RuntimeException("modelos no encontrados"));
 
         // Retornar una instancia de UserInfoResponse con los datos específicos
         return new UserInfoResponse(

@@ -32,12 +32,12 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authRequest -> authRequest
-                        .requestMatchers("/user/login", "/user/register").permitAll()
+                        .requestMatchers("/user/login", "/user/register","/user/refresh-token").permitAll()
                         .requestMatchers("/admin/login").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ADMIN") // Solo ADMIN puede acceder a /admin/**
                         .requestMatchers("/user/**").hasAuthority("USER") // Solo USER puede acceder a /user/**
                         .requestMatchers("/service-staff/**").hasAuthority("PERSONAL_CENTRO_DE_SERVICIOS") // Solo PersonalCentrodeServicios puede acceder a /service-staff/**
-                        .requestMatchers("/user/refresh-token").permitAll()
+                        //.requestMatchers("/user/refresh-token").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManager -> sessionManager
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

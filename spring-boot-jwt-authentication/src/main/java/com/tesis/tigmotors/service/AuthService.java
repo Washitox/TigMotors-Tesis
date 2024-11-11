@@ -49,12 +49,12 @@ public class AuthService {
             );
 
             User user = userRepository.findByUsername(request.getUsername())
-                    .orElseThrow(() -> new AuthExceptions.UserNotFoundException("User not found"));
+                    .orElseThrow(() -> new AuthExceptions.UserNotFoundException("Usuario no encontrado"));
 
             if (!user.getRole().equals(expectedRole)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(AuthResponse.builder()
-                        .status("error")
-                        .message("Access denied for this role")
+                        .status("Error")
+                        .message("Acceso denegado para este rol")
                         .build());
             }
 
@@ -63,14 +63,14 @@ public class AuthService {
 
             return ResponseEntity.ok(AuthResponse.builder()
                     .status("success")
-                    .message("Authentication successful")
+                    .message("Autenticación exitosa")
                     .token(accessToken)
                     .refreshToken(refreshToken.getToken())
                     .build());
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(AuthResponse.builder()
-                    .status("error")
-                    .message("Invalid username or password")
+                    .status("Error")
+                    .message("Nombre de usuario o contraseña no válidos")
                     .build());
         }
     }
@@ -78,8 +78,8 @@ public class AuthService {
     public ResponseEntity<AuthResponse> register(RegisterRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(AuthResponse.builder()
-                    .status("error")
-                    .message("Username already taken")
+                    .status("Error")
+                    .message("El nombre de usuario ya está en uso")
                     .build());
         }
 
@@ -100,7 +100,7 @@ public class AuthService {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(AuthResponse.builder()
                 .status("success")
-                .message("Registration successful")
+                .message("Registro exitoso")
                 .token(accessToken)
                 .refreshToken(refreshToken.getToken())
                 .build());
@@ -113,7 +113,7 @@ public class AuthService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                     AuthResponse.builder()
                             .status("error")
-                            .message("Refresh token expired or invalid")
+                            .message("Actualizar token caducado o inválido")
                             .build()
             );
         }
@@ -123,7 +123,7 @@ public class AuthService {
 
         return ResponseEntity.ok(AuthResponse.builder()
                 .status("success")
-                .message("New access token generated")
+                .message("Nuevo token de acceso generado")
                 .token(newAccessToken)
                 .build());
     }

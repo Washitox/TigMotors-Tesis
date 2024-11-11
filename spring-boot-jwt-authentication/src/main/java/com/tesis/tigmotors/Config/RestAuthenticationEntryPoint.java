@@ -17,7 +17,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         PrintWriter writer = response.getWriter();
-        writer.write("{\"status\":\"error\",\"message\":\"Unauthorized access\"}");
+        writer.write("{\"Estado\":\"Error\",\"Mensaje\":\"Acceso Rechazado\"}");
         writer.flush();
         writer.close();
     }

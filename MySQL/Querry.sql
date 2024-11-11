@@ -1,3 +1,4 @@
+create database tigmotors;
 Use tigmotors;
 -- Crear la tabla de roles
 CREATE TABLE roles (

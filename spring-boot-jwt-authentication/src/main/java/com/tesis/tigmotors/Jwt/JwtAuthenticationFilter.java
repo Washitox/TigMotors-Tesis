@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
-                response.getWriter().write("{\"status\":\"error\", \"message\":\"Invalid token\"}");
+                response.getWriter().write("{\"Estado\":\"Error\", \"Mensaje\":\"Token Invalido\"}");
                 return;
             }
         }
