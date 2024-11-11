@@ -1,5 +1,8 @@
 import { Input, Label, Button } from 'keep-react';
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
 
 export default function SignIn() {
   const {
@@ -17,6 +20,8 @@ export default function SignIn() {
   const onSubmit = (data) => {
     console.log(data);
   };
+
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <section>
@@ -39,7 +44,7 @@ export default function SignIn() {
                   type="text"
                   placeholder="Usuario"
                   className='bg-gray-800 border-slate-900 text-white'
-                  {...register('email', { required: 'Tu usuario es requerido' })}
+                  {...register('username', { required: 'Tu usuario es requerido' })}
                 />
                 {errors.email && <FormError message={errors.email.message} />}
               </fieldset>
@@ -48,16 +53,25 @@ export default function SignIn() {
                 <div className="mb-1 flex items-center justify-between gap-3">
                   <Label htmlFor="password">Contraseña</Label>
                   <a href="/reset-password" className="text-sm text-gray-600 hover:underline">
-                    Olvidaste tu contraseña?
+                  ¿Olvidaste tu contraseña?
                   </a>
                 </div>
+              <div className="relative">
                 <Input
                   id="password"
-                  type="password"
-                  className='bg-gray-800 border-slate-900 text-white'
+                  type={showPassword ? 'text' : 'password'}  // Alterna entre 'text' y 'password'
+                  className="bg-gray-800 border-slate-900 text-white w-full pr-10"
                   placeholder="Tu contraseña"
                   {...register('password', { required: 'Tu contraseña es requerida' })}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}  // Alterna el estado de visibilidad
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+                >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
                 {errors.password && <FormError message={errors.password.message} />}
               </fieldset>
 

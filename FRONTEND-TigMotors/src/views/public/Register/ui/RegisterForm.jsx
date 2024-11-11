@@ -1,5 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { Input, Label, Button } from 'keep-react';
+import { useState } from 'react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function RegisterForm() {
   const {
@@ -17,6 +19,7 @@ export default function RegisterForm() {
   const onSubmit = (data) => {
     console.log(data);
   };
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <section>
@@ -50,10 +53,10 @@ export default function RegisterForm() {
                   id="number"
                   type="number"
                   placeholder="Ingrese su número celular"
-                  {...register('company', { required: 'Su numero celular es requerido' })}
+                  {...register('number', { required: 'Su numero celular es requerido' })}
                   className='bg-gray-800 border-slate-900 text-white'
                 />
-                {errors.company && <FormError message={errors.company.message} />}
+                {errors.number && <FormError message={errors.number.message} />}
               </fieldset>
 
               <fieldset className="max-w-md space-y-1">
@@ -69,16 +72,25 @@ export default function RegisterForm() {
               </fieldset>
 
               <fieldset className="max-w-md space-y-1">
-                <Label htmlFor="password">Contraseña <span className="text-red-500">*</span></Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="La contraseña requiere 10 carácteres"
-                  {...register('password', { required: 'Es requerido utilizar contraseña', })}
-                  className='bg-gray-800 border-slate-900 text-white'
-                />
-                {errors.password && <FormError message={errors.password.message} />}
-              </fieldset>
+      <Label htmlFor="password">Contraseña <span className="text-red-500">*</span></Label>
+      <div className="relative">
+        <Input
+          id="password"
+          type={showPassword ? 'text' : 'password'}
+          placeholder="La contraseña requiere 10 caracteres"
+          {...register('password', { required: 'Es requerido utilizar contraseña' })}
+          className="bg-gray-800 border-slate-900 text-white w-full pr-10"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </button>
+      </div>
+      {errors.password && <FormError message={errors.password.message} />}
+    </fieldset>
             </div>
 
             <div className="mt-6 space-y-5">
