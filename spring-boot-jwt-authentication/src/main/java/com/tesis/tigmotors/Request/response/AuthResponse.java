@@ -1,4 +1,4 @@
-package com.tesis.tigmotors.Auth;
+package com.tesis.tigmotors.Request.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,5 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthResponse {
-    String token; 
+    private String status;
+    private String message;
+    private String token;
+    private String refreshToken;
 }
