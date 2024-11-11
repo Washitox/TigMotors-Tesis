@@ -26,7 +26,9 @@ public class JwtService {
     private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7;
 
     public String generateAccessToken(UserDetails user) {
-        return createToken(new HashMap<>(), user.getUsername(), ACCESS_TOKEN_EXPIRATION);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", user.getAuthorities());
+        return createToken(claims, user.getUsername(), ACCESS_TOKEN_EXPIRATION);
     }
 
     public String generateRefreshToken(UserDetails user) {
@@ -57,6 +59,7 @@ public class JwtService {
             final String username = getUsernameFromToken(token);
             return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
         } catch (Exception e) {
+            System.err.println("Token validation error: " + e.getMessage());
             return false;
         }
     }

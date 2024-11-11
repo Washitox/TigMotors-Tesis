@@ -1,7 +1,6 @@
-package com.tesis.tigmotors.Config;
+package com.tesis.tigmotors.security;
 
 import com.tesis.tigmotors.Jwt.JwtAuthenticationFilter;
-import com.tesis.tigmotors.security.CustomAccessDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,7 +8,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -17,26 +22,35 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Configuración de CORS global
                 .authorizeHttpRequests(authRequest -> authRequest
-                        // Permitir acceso sin autenticación a los endpoints iniciales de registro y login
                         .requestMatchers("/user/register", "/user/login").permitAll()
-                        .requestMatchers("admin/login").permitAll()
-                        // Protección basada en roles para otros endpoints
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")                       // Solo ADMIN puede acceder a /admin/**
-                        .requestMatchers("/user/**").hasAuthority("USER")                         // Solo USER puede acceder a /user/**
-                        .requestMatchers("/service-staff/**").hasAuthority("PERSONAL_CENTRO_DE_SERVICIOS") // Solo Personal de Servicios puede acceder a /service-staff/**
-                        .anyRequest().authenticated())                                            // Requiere autenticación para cualquier otra solicitud
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/user/**").hasAuthority("USER")
+                        .requestMatchers("/service-staff/**").hasAuthority("PERSONAL_CENTRO_DE_SERVICIOS")
+                        .anyRequest().authenticated())
                 .sessionManagement(sessionManager -> sessionManager
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exception -> exception
-                        .accessDeniedHandler(customAccessDeniedHandler))
                 .build();
+    }
+
+    // Configuración de CORS global
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
