@@ -1,4 +1,4 @@
-package com.tesis.tigmotors.Config;
+package com.tesis.tigmotors.security;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;

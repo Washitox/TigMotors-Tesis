@@ -3,16 +3,16 @@ package com.tesis.tigmotors.controller;
 import com.tesis.tigmotors.Request.response.UserInfoResponse;
 import com.tesis.tigmotors.service.UserInfoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/admin")
 @RequiredArgsConstructor
-public class UserInfoController {
+public class UserInfoAdminController {
 
     private final UserInfoService userInfoService;
 

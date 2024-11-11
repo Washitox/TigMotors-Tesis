@@ -1,4 +1,4 @@
-package com.tesis.tigmotors.Config;
+package com.tesis.tigmotors.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

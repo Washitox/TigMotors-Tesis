@@ -40,5 +40,4 @@ public class UserAuthController {
         log.info("Solicitud recibida para actualizar el token: " + refreshToken);
         return authService.refreshToken(refreshToken);
     }
-
 }
