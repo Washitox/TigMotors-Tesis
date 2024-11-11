@@ -1,4 +1,4 @@
-package com.tesis.tigmotors.security;
+package com.tesis.tigmotors.Config;
 
 import com.tesis.tigmotors.Jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
