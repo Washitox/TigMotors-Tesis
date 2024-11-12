@@ -20,13 +20,11 @@ public class UserInfoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         return new UserInfoResponse(
-                user.getRole().name(),
                 user.getUsername(),
-                user.getFirstname(),
-                user.getLastname(),
-                user.getCountry(),
+                user.getRole().name(),
+                user.getBusiness_name(),
                 user.getEmail(),
-                user.getPhoneNumber()
+                user.getPhone_number()
         );
     }
 }

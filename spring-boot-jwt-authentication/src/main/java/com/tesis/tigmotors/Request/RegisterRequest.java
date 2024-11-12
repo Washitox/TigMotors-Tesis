@@ -34,12 +34,7 @@ public class RegisterRequest {
     @NotBlank(message = "El nombre no puede quedar en blanco")
     @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres.")
     @Pattern(regexp = "^[A-Za-zÀ-ÿ]+(\\s[A-Za-zÀ-ÿ]+)*$", message = "El nombre solo puede contener letras y espacios simples entre palabras.")
-    String firstname;
-
-    @NotBlank(message = "El apellido no puede quedar en blanco")
-    @Size(min = 2, max = 50, message = "El apellido debe tener entre 2 y 50 caracteres.")
-    @Pattern(regexp = "^[A-Za-zÀ-ÿ]+(\\s[A-Za-zÀ-ÿ]+)*$", message = "El apellido solo puede contener letras y espacios simples entre palabras.")
-    String lastname;
+    String business_name;
 
 
     @NotBlank(message = "El correo electrónico no puede estar en blanco")
@@ -50,12 +45,10 @@ public class RegisterRequest {
     @NotBlank(message = "El correo no puede estar en blanco")
     String email;
 
-    @NotBlank(message = "El país no puede estar en blanco")
-    String country;
 
     @Pattern(
             regexp = "^\\+593\\d{9}$",
             message = "El número de teléfono debe comenzar con +593 y estar seguido de exactamente 9 dígitos"
     )
-    String phoneNumber;
+    String phone_number;
 }

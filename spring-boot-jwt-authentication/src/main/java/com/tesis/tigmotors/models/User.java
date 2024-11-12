@@ -1,19 +1,17 @@
 package com.tesis.tigmotors.models;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.tesis.tigmotors.roles.Role;
 import jakarta.persistence.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 
 @Data
 @Builder
@@ -24,26 +22,24 @@ import lombok.NoArgsConstructor;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
     @Column(nullable = false, unique = true)
-    String username;
+    private String username;
+
+    @Column(name = "business_name")
+    private String business_name;
 
     @Column(nullable = false)
-    String lastname;
+    private String password;
 
-    String firstname;
-    String country;
-
-    @Column(nullable = false)
-    String password;
-
-    String phoneNumber;
+    @Column(name = "phone_number")
+    private String phone_number;
 
     @Enumerated(EnumType.STRING)
-    Role role;
+    private Role role;
 
-    String email;
+    private String email;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -69,5 +65,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }

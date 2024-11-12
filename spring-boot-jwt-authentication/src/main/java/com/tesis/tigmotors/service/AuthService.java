@@ -1,12 +1,12 @@
 package com.tesis.tigmotors.service;
 
+import com.tesis.tigmotors.Exceptions.AuthExceptions;
+import com.tesis.tigmotors.Request.LoginRequest;
+import com.tesis.tigmotors.Request.RegisterRequest;
+import com.tesis.tigmotors.Request.response.AuthResponse;
 import com.tesis.tigmotors.models.RefreshToken;
 import com.tesis.tigmotors.models.User;
 import com.tesis.tigmotors.repository.UserRepository;
-import com.tesis.tigmotors.Request.response.AuthResponse;
-import com.tesis.tigmotors.Request.LoginRequest;
-import com.tesis.tigmotors.Request.RegisterRequest;
-import com.tesis.tigmotors.Exceptions.AuthExceptions;
 import com.tesis.tigmotors.roles.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -86,11 +86,9 @@ public class AuthService {
         User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
-                .country(request.getCountry())
+                .business_name(request.getBusiness_name())
                 .email(request.getEmail())
-                .phoneNumber(request.getPhoneNumber())
+                .phone_number(request.getPhone_number())
                 .role(Role.USER)
                 .build();
 
