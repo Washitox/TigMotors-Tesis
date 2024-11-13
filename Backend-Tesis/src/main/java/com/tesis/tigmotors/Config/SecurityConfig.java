@@ -28,14 +28,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Configuración de CORS global
                 .authorizeHttpRequests(authRequest -> authRequest
-                        .requestMatchers("/user/register", "/user/login","/password-reset/**").permitAll()
+                        .requestMatchers("/user/register", "/user/login", "/password/reset", "/password-reset/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/user/**").hasAuthority("USER")
                         .requestMatchers("/service-staff/**").hasAuthority("PERSONAL_CENTRO_DE_SERVICIOS")
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManager -> sessionManager
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                /*.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)*/
                 .build();
     }
 
