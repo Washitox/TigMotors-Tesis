@@ -2,7 +2,7 @@ import { Input, Label, Button } from 'keep-react';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-
+import axios from 'axios';
 
 export default function SignIn() {
   const {
@@ -11,17 +11,30 @@ export default function SignIn() {
     formState: { errors }
   } = useForm();
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(null); // Maneja el mensaje de éxito
+
   const FormError = ({ message }) => (
     <div className="block font-medium text-red-500 text-sm">
       {message}
     </div>
   );
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+  const onSubmit = async (data) => {
+    setSuccessMessage(null); // Reinicia el mensaje de éxito
 
-  const [showPassword, setShowPassword] = useState(false);
+    try {
+      const response = await axios.post("http://localhost:8085/api/v1/login-users", data);
+      console.log("Inicio de sesión exitoso");
+      setSuccessMessage("Ingresando a la mesa de trabajo Tig"); // Establece el mensaje de éxito
+      // Aquí puedes agregar una redirección si es necesario
+      setTimeout(() => {
+        window.location.href = "/dashboard"; // Cambiar la ruta según tu sistema
+      }, 2000);
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error.response?.data || error.message);
+    }
+  };
 
   return (
     <section>
@@ -43,32 +56,32 @@ export default function SignIn() {
                   id="username"
                   type="text"
                   placeholder="Usuario"
-                  className='bg-gray-800 border-slate-900 text-white'
+                  className="bg-gray-800 border-slate-900 text-white"
                   {...register('username', { required: 'Tu usuario es requerido' })}
                 />
-                {errors.email && <FormError message={errors.email.message} />}
+                {errors.username && <FormError message={errors.username.message} />}
               </fieldset>
 
               <fieldset className="max-w-md space-y-1">
                 <div className="mb-1 flex items-center justify-between gap-3">
                   <Label htmlFor="password">Contraseña</Label>
                   <a href="/reset-password" className="text-sm text-gray-600 hover:underline">
-                  ¿Olvidaste tu contraseña?
+                    ¿Olvidaste tu contraseña?
                   </a>
                 </div>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}  // Alterna entre 'text' y 'password'
-                  className="bg-gray-800 border-slate-900 text-white w-full pr-10"
-                  placeholder="Tu contraseña"
-                  {...register('password', { required: 'Tu contraseña es requerida' })}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}  // Alterna el estado de visibilidad
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
-                >
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    className="bg-gray-800 border-slate-900 text-white w-full pr-10"
+                    placeholder="Tu contraseña"
+                    {...register('password', { required: 'Tu contraseña es requerida' })}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+                  >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
@@ -79,15 +92,20 @@ export default function SignIn() {
                 <Button type="submit" color="success" className="w-full">
                   Sign In
                 </Button>
-
-
               </div>
+
+              {/* Success Message */}
+              {successMessage && (
+                <div className="mt-4 text-center text-green-500 font-medium">
+                  {successMessage}
+                </div>
+              )}
             </div>
           </form>
 
           {/* Bottom link */}
           <div className="mt-6 text-center text-sm text-indigo-200/65">
-            No tienes una cuenta?, Solicita tu registro aquí{' '}
+            ¿No tienes una cuenta? Solicita tu registro aquí{' '}
             <a href="/register" className="font-medium text-indigo-500">
               Solicitar Registro
             </a>

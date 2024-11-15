@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { Input, Label, Button } from 'keep-react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
 export default function RecuperarContraseñaForm() {
@@ -10,8 +10,8 @@ export default function RecuperarContraseñaForm() {
     handleSubmit,
     formState: { errors }
   } = useForm();
-  const navigate = useNavigate();
-  const [showAlert, setShowAlert] = useState(false);
+
+  const [successMessage, setSuccessMessage] = useState(null); // Estado para manejar el mensaje de éxito
 
   const FormError = ({ message }) => (
     <div className="block font-medium text-red-500 text-sm">
@@ -21,16 +21,14 @@ export default function RecuperarContraseñaForm() {
 
   const onSubmit = async (data) => {
     try {
-      await axios.post("api/reset-password", data);
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        navigate("/LandingView");
-      }, 3000); 
+      const response = await axios.post(`http://localhost:8085/api/v1/password-reset-token/send-token?email=${data.email}`);
+      console.log("Token de verificación enviado:", response.data);
+      
+      // Mostrar mensaje de éxito
+      setSuccessMessage("Por favor revise su correo en Spam o bandeja de entrada y siga las instrucciones para el cambio de contraseña");
     } catch (error) {
-      console.log(error);
+      console.error("Error al enviar la solicitud de recuperación:", error.response?.data || error.message);
     }
-    console.log(data);
   };
 
   return (
@@ -44,7 +42,7 @@ export default function RecuperarContraseñaForm() {
             </h1>
           </div>
 
-          
+          {/* Formulario */}
           <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-[400px]">
             <div className="space-y-5">
               <fieldset className="max-w-md space-y-1">
@@ -67,7 +65,14 @@ export default function RecuperarContraseñaForm() {
             </div>
           </form>
 
-         
+          {/* Mensaje de éxito */}
+          {successMessage && (
+            <div className="mt-6 text-center text-green-500 font-medium">
+              {successMessage}
+            </div>
+          )}
+
+          {/* Enlace inferior */}
           <div className="mt-6 text-center text-sm text-indigo-200/65">
             ¿Recordaste tu contraseña?{' '}
             <Link to="/login" className="font-medium text-indigo-500">
@@ -76,13 +81,6 @@ export default function RecuperarContraseñaForm() {
           </div>
         </div>
       </div>
-
-      
-      {showAlert && (
-        <div className="fixed bottom-4 left-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg">
-          Revisa tu correo electrónico para continuar con la recuperación de la contraseña.
-        </div>
-      )}
     </section>
   );
 }

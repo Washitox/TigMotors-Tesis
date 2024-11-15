@@ -2,7 +2,7 @@ import { useForm } from 'react-hook-form';
 import { Input, Label, Button } from 'keep-react';
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function RegisterForm() {
@@ -12,22 +12,46 @@ export default function RegisterForm() {
     formState: { errors }
   } = useForm();
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(null); // Manejar el mensaje de éxito
+  const navigate = useNavigate(); // Para redirigir al usuario
+
   const FormError = ({ message }) => (
     <div className="block font-medium text-red-500 text-sm">
       {message}
     </div>
   );
 
-  const onSubmit = async(data) => {
-    //post api
+  const onSubmit = async (data) => {
+    const formattedData = {
+      ...data,
+      phone_number: `+593${data.phone_number}` // Agrega el prefijo a phone_number
+    };
+
     try {
-      await axios.post("http://localhost:8085/user/register", data)
+      const response = await axios.post("http://localhost:8085/api/v1/register-user", formattedData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log("Registro exitoso:", response.data);
+
+      // Verifica si el mensaje de respuesta coincide con el éxito
+      if (response.data.message === "Registro exitoso, espere a que el administrador apruebe su cuenta para poder iniciar sesión") {
+        setSuccessMessage(response.data.message); // Muestra el mensaje de éxito
+        setTimeout(() => {
+          navigate("/"); // Redirige al usuario a /landing después de 3 segundos
+        }, 3000);
+      }
     } catch (error) {
-      console.log(error)
+      if (error.response && error.response.data) {
+        console.error("Error en el registro:", error.response.data);
+        setSuccessMessage(null); // Limpia cualquier mensaje previo
+      } else {
+        console.error("Error desconocido:", error.message);
+      }
     }
-    console.log(data);
   };
-  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <section>
@@ -43,64 +67,113 @@ export default function RegisterForm() {
           {/* Sign-up form */}
           <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-[400px]">
             <div className="space-y-5">
+              {/* Username */}
               <fieldset className="max-w-md space-y-1">
-                <Label htmlFor="name">Nombre o propietario <span className="text-red-500">*</span></Label>
+                <Label htmlFor="username">Nombre de usuario <span className="text-red-500">*</span></Label>
                 <Input
-                  id="name"
+                  id="username"
                   type="text"
-                  placeholder="Ingrese su nombre o nombre de la empresa"
-                  {...register('name', { required: 'Su nombre es requerido' })}
-                  className='bg-gray-800 border-slate-900 text-white'
+                  placeholder="Ingrese su nombre de usuario"
+                  {...register('username', {
+                    required: 'El nombre de usuario es requerido',
+                    minLength: { value: 5, message: 'Debe tener al menos 5 caracteres' },
+                    maxLength: { value: 50, message: 'Debe tener como máximo 50 caracteres' }
+                  })}
+                  className="bg-gray-800 border-slate-900 text-white"
                 />
-                {errors.name && <FormError message={errors.name.message} />}
+                {errors.username && <FormError message={errors.username.message} />}
               </fieldset>
 
+              {/* Business Name */}
               <fieldset className="max-w-md space-y-1">
-                <Label htmlFor="number">Numero celular <span className="text-red-500">*</span></Label>
+                <Label htmlFor="business_name">Nombre del negocio <span className="text-red-500">*</span></Label>
                 <Input
-                  id="number"
-                  type="number"
-                  placeholder="Ingrese su número celular"
-                  {...register('number', { required: 'Su numero celular es requerido' })}
-                  className='bg-gray-800 border-slate-900 text-white'
+                  id="business_name"
+                  type="text"
+                  placeholder="Ingrese el nombre del negocio"
+                  {...register('business_name', {
+                    required: 'El nombre del negocio es requerido',
+                    minLength: { value: 2, message: 'Debe tener al menos 2 caracteres' },
+                    maxLength: { value: 50, message: 'Debe tener como máximo 50 caracteres' }
+                  })}
+                  className="bg-gray-800 border-slate-900 text-white"
                 />
-                {errors.number && <FormError message={errors.number.message} />}
+                {errors.business_name && <FormError message={errors.business_name.message} />}
               </fieldset>
 
+              {/* Email */}
               <fieldset className="max-w-md space-y-1">
-                <Label htmlFor="email">Correo electronico <span className="text-red-500">*</span></Label>
+                <Label htmlFor="email">Correo electrónico <span className="text-red-500">*</span></Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="Correo electrónico"
-                  {...register('email', { required: 'Su correo electronico es requerido' })}
-                  className='bg-gray-800 border-slate-900 text-white'
+                  {...register('email', {
+                    required: 'El correo electrónico es requerido',
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: 'Ingrese un correo electrónico válido'
+                    }
+                  })}
+                  className="bg-gray-800 border-slate-900 text-white"
                 />
                 {errors.email && <FormError message={errors.email.message} />}
               </fieldset>
 
+              {/* Phone Number */}
               <fieldset className="max-w-md space-y-1">
-      <Label htmlFor="password">Contraseña <span className="text-red-500">*</span></Label>
-      <div className="relative">
-        <Input
-          id="password"
-          type={showPassword ? 'text' : 'password'}
-          placeholder="La contraseña requiere 10 caracteres"
-          {...register('password', { required: 'Es requerido utilizar contraseña' })}
-          className="bg-gray-800 border-slate-900 text-white w-full pr-10"
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
-        >
-          {showPassword ? <FaEyeSlash /> : <FaEye />}
-        </button>
-      </div>
-      {errors.password && <FormError message={errors.password.message} />}
-    </fieldset>
+                <Label htmlFor="phone_number">Número celular <span className="text-red-500">*</span></Label>
+                <div className="flex items-center">
+                  <span className="bg-gray-700 text-white px-3 py-2 rounded-l-md">+593</span>
+                  <Input
+                    id="phone_number"
+                    type="text"
+                    placeholder="Ingrese 9 dígitos"
+                    {...register('phone_number', {
+                      required: 'El número celular es requerido',
+                      pattern: {
+                        value: /^\d{9}$/,
+                        message: 'Debe contener exactamente 9 dígitos'
+                      }
+                    })}
+                    className="bg-gray-800 border-slate-900 text-white rounded-r-md"
+                  />
+                </div>
+                {errors.phone_number && <FormError message={errors.phone_number.message} />}
+              </fieldset>
+
+              {/* Password */}
+              <fieldset className="max-w-md space-y-1">
+                <Label htmlFor="password">Contraseña <span className="text-red-500">*</span></Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Ingrese su contraseña"
+                    {...register('password', {
+                      required: 'La contraseña es requerida',
+                      minLength: { value: 8, message: 'Debe tener al menos 8 caracteres' },
+                      maxLength: { value: 20, message: 'Debe tener como máximo 20 caracteres' },
+                      pattern: {
+                        value: /^(?=.*[A-Z])(?=.*[!@#$&*]).*$/,
+                        message: 'Debe contener una mayúscula y un carácter especial'
+                      }
+                    })}
+                    className="bg-gray-800 border-slate-900 text-white w-full pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+                {errors.password && <FormError message={errors.password.message} />}
+              </fieldset>
             </div>
 
+            {/* Submit Button */}
             <div className="mt-6 space-y-5">
               <Button type="submit" color="success" className="w-full">
                 Solicitar registro
@@ -108,11 +181,18 @@ export default function RegisterForm() {
             </div>
           </form>
 
+          {/* Mensaje de éxito */}
+          {successMessage && (
+            <div className="mt-6 text-center text-green-500 font-medium">
+              {successMessage}
+            </div>
+          )}
+
           {/* Bottom link */}
           <div className="mt-6 text-center text-sm text-indigo-200/65">
-            Ya tienes una cuenta creada?{' '}
+            ¿Ya tienes una cuenta creada?{' '}
             <Link to="/login" className="font-medium text-indigo-500">
-            Inicia sesión aquí
+              Inicia sesión aquí
             </Link>
           </div>
         </div>
