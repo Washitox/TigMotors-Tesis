@@ -2,6 +2,8 @@ import { useForm } from 'react-hook-form';
 import { Input, Label, Button } from 'keep-react';
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 export default function RegisterForm() {
   const {
@@ -16,7 +18,13 @@ export default function RegisterForm() {
     </div>
   );
 
-  const onSubmit = (data) => {
+  const onSubmit = async(data) => {
+    //post api
+    try {
+      await axios.post("http://localhost:8085/user/register", data)
+    } catch (error) {
+      console.log(error)
+    }
     console.log(data);
   };
   const [showPassword, setShowPassword] = useState(false);
@@ -103,9 +111,9 @@ export default function RegisterForm() {
           {/* Bottom link */}
           <div className="mt-6 text-center text-sm text-indigo-200/65">
             Ya tienes una cuenta creada?{' '}
-            <a href="/login" className="font-medium text-indigo-500">
+            <Link to="/login" className="font-medium text-indigo-500">
             Inicia sesión aquí
-            </a>
+            </Link>
           </div>
         </div>
       </div>
