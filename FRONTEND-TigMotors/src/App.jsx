@@ -6,6 +6,7 @@ import RegisterView from "./views/public/Register/RegisterView";
 import RecuperarContraseñaView from "./views/public/RecuperarContraseña/RecuperarContraseñaView";
 import Layout from "./views/public/Layout";
 import EdnpointNoEncontradoView from "./views/public/Endpoint no encontrado/EdnpointNoEncontradoView";
+import NuevaContraseñaView from "./views/public/Nueva Contraseña/NuevaContraseñaView";
 
 
 const App = () => {
@@ -18,6 +19,7 @@ const App = () => {
           <Route path="/login" element={<LoginView/>}/>
           <Route path="/register" element={<RegisterView/>}/>
           <Route path="/reset-password" element={<RecuperarContraseñaView/>}/>
+          <Route path="/new-password" element={<NuevaContraseñaView/>}/>
         </Route>
 
 

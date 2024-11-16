@@ -1,12 +1,9 @@
-import Section from "./ui/Section"
-import Videointroduccion from "./ui/Videointroduccion"
-
+import VideoTig from "./ui/VideoTig";
 
 export default function LandingView() {
   return (
-    <div>
-      <Section/>
-      <Videointroduccion/>  
+    <div className="bg-gray-900 min-h-screen">
+      <VideoTig />
     </div>
-  )
+  );
 }

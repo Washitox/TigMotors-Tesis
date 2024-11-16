@@ -11,7 +11,8 @@ export default function RecuperarContraseñaForm() {
     formState: { errors }
   } = useForm();
 
-  const [successMessage, setSuccessMessage] = useState(null); // Estado para manejar el mensaje de éxito
+  const [message, setMessage] = useState(null); // Estado para manejar el mensaje de éxito o error
+  const [isError, setIsError] = useState(false); // Estado para determinar si el mensaje es de error
 
   const FormError = ({ message }) => (
     <div className="block font-medium text-red-500 text-sm">
@@ -21,13 +22,20 @@ export default function RecuperarContraseñaForm() {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post(`http://localhost:8085/api/v1/password-reset-token/send-token?email=${data.email}`);
+      const response = await axios.post(
+        `http://localhost:8085/api/v1/password-reset-token/send-token?email=${data.email}`
+      );
       console.log("Token de verificación enviado:", response.data);
-      
-      // Mostrar mensaje de éxito
-      setSuccessMessage("Por favor revise su correo en Spam o bandeja de entrada y siga las instrucciones para el cambio de contraseña");
+
+      // Mostrar mensaje de éxito en verde
+      setMessage("Se envió la solicitud, por favor revise su correo electrónico.");
+      setIsError(false); // No es un error
     } catch (error) {
       console.error("Error al enviar la solicitud de recuperación:", error.response?.data || error.message);
+
+      // Mostrar mensaje de error en rojo
+      setMessage("Error al enviar la solicitud, intente nuevamente.");
+      setIsError(true); // Es un error
     }
   };
 
@@ -46,7 +54,9 @@ export default function RecuperarContraseñaForm() {
           <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-[400px]">
             <div className="space-y-5">
               <fieldset className="max-w-md space-y-1">
-                <Label htmlFor="email">Correo electrónico <span className="text-red-500">*</span></Label>
+                <Label htmlFor="email">
+                  Correo electrónico <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -65,10 +75,14 @@ export default function RecuperarContraseñaForm() {
             </div>
           </form>
 
-          {/* Mensaje de éxito */}
-          {successMessage && (
-            <div className="mt-6 text-center text-green-500 font-medium">
-              {successMessage}
+          {/* Mensaje de éxito o error */}
+          {message && (
+            <div
+              className={`mt-6 text-center font-medium ${
+                isError ? 'text-red-500' : 'text-green-500'
+              }`}
+            >
+              {message}
             </div>
           )}
 
