@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import logo from "../../../../assets/images/TigMotos.png"
+import logo from "../../../../assets/images/TigMotors.png"
 
 export default function NotFoundPage() {
   return (

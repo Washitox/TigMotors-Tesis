@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "keep-react";
 // import Logo from "./Logo"; // Assuming Logo is another component
 import { useNavigate } from "react-router-dom";
-import logo from "../../assets/images/TigMotos.png"
+import logo from "../../assets/images/TigMotors.png"
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Placeholder state for login status

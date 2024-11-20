@@ -20,10 +20,20 @@ const App = () => {
           <Route path="/register" element={<RegisterView/>}/>
           <Route path="/reset-password" element={<RecuperarContraseñaView/>}/>
           <Route path="/new-password" element={<NuevaContraseñaView/>}/>
+
+
+          {/*Rutas que pasar al privado*/}
+
+          
+
+
+
         </Route>
 
 
-        
+      
+
+      
 
         <Route element={<PrivateRoute/>}>
           <Route path="/admin" element={<h1>Admin</h1>}/>

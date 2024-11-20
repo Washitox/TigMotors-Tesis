@@ -9,7 +9,8 @@ export default function RegisterForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    setError // Para establecer errores manualmente
   } = useForm();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -46,9 +47,28 @@ export default function RegisterForm() {
     } catch (error) {
       if (error.response && error.response.data) {
         console.error("Error en el registro:", error.response.data);
+
+        // Muestra errores específicos en los campos
+        if (error.response.data.errors) {
+          Object.keys(error.response.data.errors).forEach((key) => {
+            setError(key, {
+              type: 'server',
+              message: error.response.data.errors[key] // Mensaje específico del campo
+            });
+          });
+        } else if (error.response.data.message) {
+          setError('general', {
+            type: 'server',
+            message: error.response.data.message
+          });
+        }
         setSuccessMessage(null); // Limpia cualquier mensaje previo
       } else {
         console.error("Error desconocido:", error.message);
+        setError('general', {
+          type: 'server',
+          message: 'Ocurrió un error inesperado. Intente nuevamente.'
+        });
       }
     }
   };
@@ -77,7 +97,8 @@ export default function RegisterForm() {
                   {...register('username', {
                     required: 'El nombre de usuario es requerido',
                     minLength: { value: 5, message: 'Debe tener al menos 5 caracteres' },
-                    maxLength: { value: 50, message: 'Debe tener como máximo 50 caracteres' }
+                    maxLength: { value: 50, message: 'Debe tener como máximo 50 caracteres' },
+                    pattern: { value: /^[A-Za-z]+$/, message: 'El nombre de usuario no puede contener números ni caracteres especiales' }
                   })}
                   className="bg-gray-800 border-slate-900 text-white"
                 />
@@ -93,7 +114,7 @@ export default function RegisterForm() {
                   placeholder="Ingrese el nombre del negocio"
                   {...register('business_name', {
                     required: 'El nombre del negocio es requerido',
-                    minLength: { value: 2, message: 'Debe tener al menos 2 caracteres' },
+                    minLength: { value: 2, message: 'Debe tener al menos dos caracteres' },
                     maxLength: { value: 50, message: 'Debe tener como máximo 50 caracteres' }
                   })}
                   className="bg-gray-800 border-slate-900 text-white"
@@ -180,6 +201,13 @@ export default function RegisterForm() {
               </Button>
             </div>
           </form>
+
+          {/* General Error Message */}
+          {errors.general && (
+            <div className="mt-4 text-center text-red-500 font-medium">
+              {errors.general.message}
+            </div>
+          )}
 
           {/* Mensaje de éxito */}
           {successMessage && (
