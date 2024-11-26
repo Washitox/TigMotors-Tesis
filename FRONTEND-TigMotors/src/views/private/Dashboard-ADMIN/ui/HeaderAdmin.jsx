@@ -2,10 +2,6 @@ import React from "react";
 import logo from "../../../../assets/images/TigMotors.png";
 
 export default function HeaderAdmin() {
-  const handleLogout = () => {
-    // Aquí puedes agregar lógica para cerrar sesión
-    window.location.href = "/login"; // Redirige al login
-  };
 
   return (
     <header className="bg-gray-900 h-20 flex items-center justify-center">

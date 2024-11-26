@@ -10,6 +10,7 @@ import RegistrarUsuario from "./ui/RegistrarUsuario";
 import RegistrarTrabajo from "./ui/RegistrarTrabajo";
 import Perfil from "./ui/Perfil";
 
+
 export default function DashboardAdminView() {
   return (
     <div className="flex h-screen bg-gray-900 text-white">
@@ -23,16 +24,25 @@ export default function DashboardAdminView() {
 
         {/* Dynamic Content using Routes */}
         <main className="p-6 overflow-y-auto">
-          
-        <Route element={<HeaderAdmin/>}>
-                <Route path="/admin/trabajos" element={<Trabajos />} />
-                <Route path="/admin/usuarios" element={<Usuarios />} />
-                <Route path="/admin/solicitudes-trabajo" element={<SolicitudesTrabajo />} />
-                <Route path="/admin/solicitudes-registro" element={<SolicitudesRegistro />} />
-                <Route path="/admin/registrar-usuario" element={<RegistrarUsuario />} />
-                <Route path="/admin/registrar-trabajo" element={<RegistrarTrabajo />} />
-                <Route path="/admin/perfil" element={<Perfil />} />
+          <Routes>
+            {/* Wrapper for Topbar */}
+            <Route
+              element={
+                <>
+                  <Sidebar />
+                </>
+              }
+            >
+              {/* Subroutes */}
+              <Route path="/admin/trabajos" element={<Trabajos />} />
+              <Route path="/admin/usuarios" element={<Usuarios />} />
+              <Route path="/admin/solicitudes-trabajo" element={<SolicitudesTrabajo />} />
+              <Route path="/admin/solicitudes-registro" element={<SolicitudesRegistro />} />
+              <Route path="/admin/registrar-usuario" element={<RegistrarUsuario />} />
+              <Route path="/admin/registrar-trabajo" element={<RegistrarTrabajo />} />
+              <Route path="/admin/perfil" element={<Perfil />} />
             </Route>
+          </Routes>
         </main>
       </div>
     </div>

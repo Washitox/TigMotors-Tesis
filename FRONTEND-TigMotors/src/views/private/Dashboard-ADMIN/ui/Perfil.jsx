@@ -1,10 +1,11 @@
-import React from "react";
+import React from 'react'
 
-export default function Perfil() {
+function Perfil() {
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Perfil</h1>
-      <p>Aquí estará la información del perfil del administrador.</p>
+      
     </div>
-  );
+  )
 }
+
+export default Perfil

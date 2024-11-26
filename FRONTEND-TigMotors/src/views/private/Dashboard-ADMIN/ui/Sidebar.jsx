@@ -1,8 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaUser, FaBriefcase, FaClipboard, FaUserPlus, FaCog, FaFileAlt } from "react-icons/fa";
 
 export default function Sidebar() {
+  const location = useLocation(); // Hook para obtener la ruta actual
+
   const menuItems = [
     { name: "Trabajos", path: "/admin/trabajos", icon: <FaBriefcase /> },
     { name: "Usuarios", path: "/admin/usuarios", icon: <FaUser /> },
@@ -22,7 +24,9 @@ export default function Sidebar() {
             <li key={item.name}>
               <Link
                 to={item.path}
-                className="flex items-center p-3 rounded-lg hover:bg-gray-700 focus:bg-gray-700 focus:outline-none text-white"
+                className={`flex items-center p-3 rounded-lg ${
+                  location.pathname === item.path ? "bg-indigo-600 text-white" : "hover:bg-gray-700 text-gray-400"
+                }`}
               >
                 <span className="mr-3">{item.icon}</span>
                 {item.name}

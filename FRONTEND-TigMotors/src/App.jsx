@@ -19,57 +19,48 @@ import SolicitudesRegistro from "./views/private/Dashboard-ADMIN/ui/SolicitudesR
 import RegistrarUsuario from "./views/private/Dashboard-ADMIN/ui/RegistrarUsuario";
 import RegistrarTrabajo from "./views/private/Dashboard-ADMIN/ui/RegistrarTrabajo";
 import Perfil from "./views/private/Dashboard-ADMIN/ui/Perfil";
-import HeaderAdmin from "./views/private/Dashboard-ADMIN/ui/HeaderAdmin";
-const App = () => {
 
+const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<Layout/>}>
-          <Route index element={<LandingView/>}/>
-          <Route path="/login" element={<LoginView/>}/>
-          <Route path="/register" element={<RegisterView/>}/>
-          <Route path="/reset-password" element={<RecuperarContraseñaView/>}/>
-          <Route path="/new-password" element={<NuevaContraseñaView/>}/>
+        <Route element={<Layout />}>
+          <Route index element={<LandingView />} />
+          <Route path="/login" element={<LoginView />} />
+          <Route path="/register" element={<RegisterView />} />
+          <Route path="/reset-password" element={<RecuperarContraseñaView />} />
+          <Route path="/new-password" element={<NuevaContraseñaView />} />
         </Route>
-      
-      
-        <Route element={<PrivateRoute/>}>
-          <Route element={<LayoutCierre/>}>
+
+        <Route element={<PrivateRoute />}>
+          <Route element={<LayoutCierre />}>
             <Route element={<PrivateRoute allowedRoles={["ADMIN"]} />}>
-              <Route path="/admin" element={<DashboardAdminView />} />
+              <Route path="/admin/" element={<DashboardAdminView />} />
+              <Route path="/admin/trabajos" element={<Trabajos />} />
+              <Route path="/admin/usuarios" element={<Usuarios />} />
+              <Route path="/admin/solicitudes-trabajo" element={<SolicitudesTrabajo />} />
+              <Route path="/admin/solicitudes-registro" element={<SolicitudesRegistro />} />
+              <Route path="/admin/registrar-usuario" element={<RegistrarUsuario />} />
+              <Route path="/admin/registrar-trabajo" element={<RegistrarTrabajo />} />
+              <Route path="/admin/perfil" element={<Perfil />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={["PERSONAL_CENTRO_DE_SERVICIOS"]} />}>
-              <Route path="/personal" element={<DashboardPersonalView />} />
+              <Route path="/personal/" element={<DashboardPersonalView />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={["USER"]} />}>
-              <Route path="/user" element={<DashboardUserView />} />
+              <Route path="/user/" element={<DashboardUserView />} />
             </Route>
-
-            <Route element={<HeaderAdmin/>}>
-                <Route path="/admin/trabajos" element={<Trabajos />} />
-                <Route path="/admin/usuarios" element={<Usuarios />} />
-                <Route path="/admin/solicitudes-trabajo" element={<SolicitudesTrabajo />} />
-                <Route path="/admin/solicitudes-registro" element={<SolicitudesRegistro />} />
-                <Route path="/admin/registrar-usuario" element={<RegistrarUsuario />} />
-                <Route path="/admin/registrar-trabajo" element={<RegistrarTrabajo />} />
-                <Route path="/admin/perfil" element={<Perfil />} />
-            </Route>
+          </Route>
 
 
         </Route>
 
 
-
-        </Route>
-
-        <Route path="*" element={<EdnpointNoEncontradoView/>} />
+        <Route path="*" element={<EdnpointNoEncontradoView />} />
         <Route path="/unauthorized" element={<PaginaNoAutorizadaView />} />
-
       </Routes>
     </BrowserRouter>
-  )
-}
+  );
+};
 
 export default App;
-  
