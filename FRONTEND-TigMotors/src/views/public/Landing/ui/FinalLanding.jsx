@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { Link as ScrollLink } from "react-scroll";
 
 export default function FinalLanding() {
   return (
@@ -21,11 +23,26 @@ export default function FinalLanding() {
           <div>
             <h4 className="text-lg font-semibold mb-4">Compañía</h4>
             <ul className="text-gray-400 text-sm space-y-2">
-              <li>Acerca de nosotros</li>
-              <li>Equipo</li>
-              
-              
-              
+              <li>
+                <ScrollLink
+                  to="acerca-nosotros" // Id de la sección AcercaNosotros
+                  smooth={true}
+                  duration={500}
+                  className="cursor-pointer hover:text-indigo-400"
+                >
+                  Acerca de nosotros
+                </ScrollLink>
+              </li>
+              <li>
+                <ScrollLink
+                  to="equipo" // Id de la sección Equipo
+                  smooth={true}
+                  duration={500}
+                  className="cursor-pointer hover:text-indigo-400"
+                >
+                  Equipo
+                </ScrollLink>
+              </li>
             </ul>
           </div>
 
@@ -33,10 +50,22 @@ export default function FinalLanding() {
           <div>
             <h4 className="text-lg font-semibold mb-4">Recursos</h4>
             <ul className="text-gray-400 text-sm space-y-2">
-              <li>Términos y condiciones</li>
-              <li>Política de privacidad</li>
-
-              
+              <li>
+                <Link
+                  to="/terminos"
+                  className="hover:text-indigo-400 transition-colors"
+                >
+                  Términos y condiciones
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/privacidad"
+                  className="hover:text-indigo-400 transition-colors"
+                >
+                  Política de privacidad
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -47,26 +76,6 @@ export default function FinalLanding() {
               <li>Correo: tigmotors.inc.uio@gmail.com</li>
               <li>Teléfono: +593 981615291</li>
               <li>WhatsApp: +593 981615291</li>
-              <li>
-                <a
-                  href="https://www.facebook.com"
-                  className="text-indigo-400 hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Facebook
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.instagram.com"
-                  className="text-indigo-400 hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Instagram
-                </a>
-              </li>
             </ul>
           </div>
         </div>

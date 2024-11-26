@@ -36,7 +36,7 @@ export default function InformaciónTig() {
           {/* Mapa */}
           <div className="w-full lg:w-1/2 flex justify-center">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d249.36288114660718!2d-78.4377263426477!3d-0.1418183000041835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d5995d0812345b%3A0x6b8d8907f246f474!2sSector%20Gualo%2C%20Calles%20la%20Dolorosa%20y%202%20de%20Agosto!5e0!3m2!1ses!2sec!4v1732121359276!5m2!1ses!2sec"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1307.8563607448345!2d-78.43855867147545!3d-0.14182305889018226!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d58f001afacd75%3A0x8d3d5f60602f4db2!2sTigMotors!5e1!3m2!1ses!2sec!4v1732635442341!5m2!1ses!2sec"
               width="100%"
               height="450"
               style={{ border: "0", borderRadius: "10px" }}
@@ -51,3 +51,5 @@ export default function InformaciónTig() {
     </section>
   );
 }
+
+

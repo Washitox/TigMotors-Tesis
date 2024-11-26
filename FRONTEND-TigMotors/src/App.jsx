@@ -7,8 +7,19 @@ import RecuperarContraseñaView from "./views/public/RecuperarContraseña/Recupe
 import Layout from "./views/public/Layout";
 import EdnpointNoEncontradoView from "./views/public/Endpoint no encontrado/EdnpointNoEncontradoView";
 import NuevaContraseñaView from "./views/public/Nueva Contraseña/NuevaContraseñaView";
-
-
+import LayoutCierre from "./views/private/LayoutCierre";
+import DashboardAdminView from "./views/private/Dashboard-ADMIN/DashboardAdminView";
+import DashboardPersonalView from "./views/private/Dashboard-PERSONAL_CENTRO_DE_SERVICIOS/DashboardPersonalView";
+import DashboardUserView from "./views/private/Dashboard-USER/DashboardUserView";
+import PaginaNoAutorizadaView from "./views/public/Pagina no Autorizada/PaginaNoAutorizadaView";
+import Trabajos from "./views/private/Dashboard-ADMIN/ui/Trabajos";
+import Usuarios from "./views/private/Dashboard-ADMIN/ui/Usuarios";
+import SolicitudesTrabajo from "./views/private/Dashboard-ADMIN/ui/SolicitudesTrabajo";
+import SolicitudesRegistro from "./views/private/Dashboard-ADMIN/ui/SolicitudesRegistro";
+import RegistrarUsuario from "./views/private/Dashboard-ADMIN/ui/RegistrarUsuario";
+import RegistrarTrabajo from "./views/private/Dashboard-ADMIN/ui/RegistrarTrabajo";
+import Perfil from "./views/private/Dashboard-ADMIN/ui/Perfil";
+import HeaderAdmin from "./views/private/Dashboard-ADMIN/ui/HeaderAdmin";
 const App = () => {
 
   return (
@@ -20,26 +31,41 @@ const App = () => {
           <Route path="/register" element={<RegisterView/>}/>
           <Route path="/reset-password" element={<RecuperarContraseñaView/>}/>
           <Route path="/new-password" element={<NuevaContraseñaView/>}/>
+        </Route>
+      
+      
+        <Route element={<PrivateRoute/>}>
+          <Route element={<LayoutCierre/>}>
+            <Route element={<PrivateRoute allowedRoles={["ADMIN"]} />}>
+              <Route path="/admin" element={<DashboardAdminView />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={["PERSONAL_CENTRO_DE_SERVICIOS"]} />}>
+              <Route path="/personal" element={<DashboardPersonalView />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={["USER"]} />}>
+              <Route path="/user" element={<DashboardUserView />} />
+            </Route>
 
-
-          {/*Rutas que pasar al privado*/}
-
-          
-
+            <Route element={<HeaderAdmin/>}>
+                <Route path="/admin/trabajos" element={<Trabajos />} />
+                <Route path="/admin/usuarios" element={<Usuarios />} />
+                <Route path="/admin/solicitudes-trabajo" element={<SolicitudesTrabajo />} />
+                <Route path="/admin/solicitudes-registro" element={<SolicitudesRegistro />} />
+                <Route path="/admin/registrar-usuario" element={<RegistrarUsuario />} />
+                <Route path="/admin/registrar-trabajo" element={<RegistrarTrabajo />} />
+                <Route path="/admin/perfil" element={<Perfil />} />
+            </Route>
 
 
         </Route>
 
 
-      
 
-      
-
-        <Route element={<PrivateRoute/>}>
-          <Route path="/admin" element={<h1>Admin</h1>}/>
         </Route>
 
         <Route path="*" element={<EdnpointNoEncontradoView/>} />
+        <Route path="/unauthorized" element={<PaginaNoAutorizadaView />} />
+
       </Routes>
     </BrowserRouter>
   )

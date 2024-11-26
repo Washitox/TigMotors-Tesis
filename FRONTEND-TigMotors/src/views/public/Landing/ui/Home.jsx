@@ -1,4 +1,5 @@
 import React from "react";
+import { Link as ScrollLink } from "react-scroll";
 
 export default function Home() {
   return (
@@ -11,8 +12,8 @@ export default function Home() {
           Especialistas en soldadura de alta precisión y reparación de cabezotes. Transformamos la calidad en eficiencia.
         </p>
         <div className="mt-6 flex justify-center gap-4">
+          {/* Botón para contactar */}
           <a
-          
             href="https://wa.me/593981615291"
             target="_blank"
             rel="noopener noreferrer"
@@ -20,9 +21,16 @@ export default function Home() {
           >
             Contactar Ahora
           </a>
-          <button className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+
+          {/* Botón para hacer scroll a la sección de información de contacto */}
+          <ScrollLink
+            to="informacion-contacto" // ID de la sección
+            smooth={true}
+            duration={500}
+            className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 cursor-pointer"
+          >
             Más Información
-          </button>
+          </ScrollLink>
         </div>
       </div>
     </header>

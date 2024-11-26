@@ -16,7 +16,7 @@ export default function NotFoundPage() {
         </p>
         
         <Link to="/" className="mt-8 inline-block text-lg font-medium text-indigo-500 underline">
-          TigMotors
+          Regresar al inicio
         </Link>
       </div>
     </section>
