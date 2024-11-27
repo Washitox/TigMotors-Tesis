@@ -69,22 +69,23 @@ export default function SignIn() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="py-12 md:py-20">
           <div className="pb-12 text-center">
-            <h1 className="text-3xl font-semibold">Inicio de sesión</h1>
+          <h1 className="animate-[gradient_6s_linear_infinite] bg-[linear-gradient(to_right,theme(colors.gray.200),theme(colors.indigo.200),theme(colors.gray.50),theme(colors.indigo.300),theme(colors.gray.200))] bg-[length:200%_auto] bg-clip-text font-nacelle text-3xl font-semibold text-transparent md:text-4xl">Inicio de sesión</h1>
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-[400px]">
             <div className="space-y-5">
               <fieldset className="space-y-1">
-                <Label htmlFor="username">Usuario</Label>
+                <Label htmlFor="username">Usuario<span className="text-red-500">*</span></Label>
                 <Input
                   id="username"
                   type="text"
                   placeholder="Usuario"
                   {...register("username", { required: "Tu usuario es requerido" })}
+                className="bg-gray-800 border-slate-900 text-white"
                 />
                 {errors.username && <FormError message={errors.username.message} />}
               </fieldset>
               <fieldset className="space-y-1">
-                <Label htmlFor="password">Contraseña</Label>
+                <Label htmlFor="password">Contraseña<span className="text-red-500">*</span></Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -94,21 +95,31 @@ export default function SignIn() {
                       required: "Tu contraseña es requerida",
                       minLength: { value: 8, message: "Mínimo 8 caracteres." },
                     })}
+                  className="bg-gray-800 border-slate-900 text-white"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
                 {errors.password && <FormError message={errors.password.message} />}
               </fieldset>
-              <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600">
+              <Button Button type="submit" color="success" className="w-full">
                 Iniciar Sesión
               </Button>
               {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
+            </div>
+            {/* Opción de "Olvidaste tu contraseña" */}
+            <div className="text-center mt-4">
+              <a
+                href="/reset-password"
+                className="text-sm text-blue-500 hover:text-blue-700"
+              >
+                ¿Olvidaste tu contraseña?
+              </a>
             </div>
           </form>
         </div>

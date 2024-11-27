@@ -19,6 +19,13 @@ import SolicitudesRegistro from "./views/private/Dashboard-ADMIN/ui/SolicitudesR
 import RegistrarUsuario from "./views/private/Dashboard-ADMIN/ui/RegistrarUsuario";
 import RegistrarTrabajo from "./views/private/Dashboard-ADMIN/ui/RegistrarTrabajo";
 import Perfil from "./views/private/Dashboard-ADMIN/ui/Perfil";
+import PerfilUser from "./views/private/Dashboard-USER/ui/PerfilUser";
+import TrabajosUser from "./views/private/Dashboard-USER/ui/TrabajosUser";
+import SolicitarTrabajoUser from "./views/private/Dashboard-USER/ui/SolicitarTrabajoUser";
+import TrabajosPersonal from "./views/private/Dashboard-PERSONAL_CENTRO_DE_SERVICIOS/ui/TrabajosPersonal";
+import ReportesPersonal from "./views/private/Dashboard-PERSONAL_CENTRO_DE_SERVICIOS/ui/ReportesPersonal";
+import PerfilPersonal from "./views/private/Dashboard-PERSONAL_CENTRO_DE_SERVICIOS/ui/PerfilPersonal";
+import UsuariosPersonal from "./views/private/Dashboard-PERSONAL_CENTRO_DE_SERVICIOS/ui/UsuariosPersonal";
 
 const App = () => {
   return (
@@ -46,9 +53,16 @@ const App = () => {
             </Route>
             <Route element={<PrivateRoute allowedRoles={["PERSONAL_CENTRO_DE_SERVICIOS"]} />}>
               <Route path="/personal/" element={<DashboardPersonalView />} />
+              <Route path="/personal/trabajos" element={<TrabajosPersonal />} />
+              <Route path="/personal/usuarios" element={<UsuariosPersonal />} />
+              <Route path="/personal/reportes" element={<ReportesPersonal />} />
+              <Route path="/personal/perfil" element={<PerfilPersonal />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={["USER"]} />}>
               <Route path="/user/" element={<DashboardUserView />} />
+              <Route path="/user/perfil" element={<PerfilUser />} />
+              <Route path="/user/trabajos" element={<TrabajosUser />} />
+              <Route path="/user/solicitar-trabajo" element={<SolicitarTrabajoUser />} />
             </Route>
           </Route>
 
