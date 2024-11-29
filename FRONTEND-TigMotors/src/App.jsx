@@ -16,7 +16,6 @@ import Trabajos from "./views/private/Dashboard-ADMIN/ui/Trabajos";
 import Usuarios from "./views/private/Dashboard-ADMIN/ui/Usuarios";
 import SolicitudesTrabajo from "./views/private/Dashboard-ADMIN/ui/SolicitudesTrabajo";
 import SolicitudesRegistro from "./views/private/Dashboard-ADMIN/ui/SolicitudesRegistro";
-import RegistrarUsuario from "./views/private/Dashboard-ADMIN/ui/RegistrarUsuario";
 import RegistrarTrabajo from "./views/private/Dashboard-ADMIN/ui/RegistrarTrabajo";
 import Perfil from "./views/private/Dashboard-ADMIN/ui/Perfil";
 import PerfilUser from "./views/private/Dashboard-USER/ui/PerfilUser";
@@ -47,7 +46,6 @@ const App = () => {
               <Route path="/admin/usuarios" element={<Usuarios />} />
               <Route path="/admin/solicitudes-trabajo" element={<SolicitudesTrabajo />} />
               <Route path="/admin/solicitudes-registro" element={<SolicitudesRegistro />} />
-              <Route path="/admin/registrar-usuario" element={<RegistrarUsuario />} />
               <Route path="/admin/registrar-trabajo" element={<RegistrarTrabajo />} />
               <Route path="/admin/perfil" element={<Perfil />} />
             </Route>

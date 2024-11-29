@@ -10,7 +10,6 @@ export default function Sidebar() {
     { name: "Usuarios", path: "/admin/usuarios", icon: <FaUser /> },
     { name: "Solicitudes de Trabajo", path: "/admin/solicitudes-trabajo", icon: <FaClipboard /> },
     { name: "Solicitudes de Registro", path: "/admin/solicitudes-registro", icon: <FaFileAlt /> },
-    { name: "Registrar Usuario", path: "/admin/registrar-usuario", icon: <FaUserPlus /> },
     { name: "Registrar Trabajo", path: "/admin/registrar-trabajo", icon: <FaBriefcase /> },
     { name: "Perfil", path: "/admin/perfil", icon: <FaCog /> },
   ];

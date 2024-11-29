@@ -6,9 +6,9 @@ import Trabajos from "./ui/Trabajos";
 import Usuarios from "./ui/Usuarios";
 import SolicitudesTrabajo from "./ui/SolicitudesTrabajo";
 import SolicitudesRegistro from "./ui/SolicitudesRegistro";
-import RegistrarUsuario from "./ui/RegistrarUsuario";
 import RegistrarTrabajo from "./ui/RegistrarTrabajo";
 import Perfil from "./ui/Perfil";
+import Estatus from "./ui/Estatus";
 
 
 export default function DashboardAdminView() {
@@ -32,6 +32,12 @@ export default function DashboardAdminView() {
             </p>
           </div>
 
+        {/* Contenedor de la gráfica */}
+        <div className="w-1/4 p-4 bg-gray-700 rounded-lg">
+          <h2 className="text-lg font-bold mb-4 text-center">Estatus de las Solicitudes</h2>
+          <Estatus />
+        </div>
+
           <Routes>
             {/* Wrapper for Topbar */}
             <Route
@@ -46,7 +52,6 @@ export default function DashboardAdminView() {
               <Route path="/admin/usuarios" element={<Usuarios />} />
               <Route path="/admin/solicitudes-trabajo" element={<SolicitudesTrabajo />} />
               <Route path="/admin/solicitudes-registro" element={<SolicitudesRegistro />} />
-              <Route path="/admin/registrar-usuario" element={<RegistrarUsuario />} />
               <Route path="/admin/registrar-trabajo" element={<RegistrarTrabajo />} />
               <Route path="/admin/perfil" element={<Perfil />} />
             </Route>

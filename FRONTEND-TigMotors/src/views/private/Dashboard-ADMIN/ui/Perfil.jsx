@@ -80,16 +80,6 @@ function Perfil() {
                   </table>
                 </div>
 
-                {/* Botones debajo del perfil */}
-                <div className="flex space-x-4 justify-center mt-6">
-                  <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-                    Editar Perfil
-                  </button>
-                  <button className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">
-                    Cambiar Contraseña
-                  </button>
-                </div>
-
                 {/* Contenedor de la gráfica */}
                 <div className="bg-gray-700 p-4 rounded-lg mt-6 max-w-sm">
                   <h2 className="text-lg font-bold mb-4 text-center">Estadísticas</h2>
