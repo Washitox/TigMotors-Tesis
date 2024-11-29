@@ -40,7 +40,7 @@ export default function Estatus() {
     // Configurar un intervalo para actualizar los datos en tiempo real
     const interval = setInterval(() => {
       fetchStatusData();
-    }, 5000); // Actualiza cada 5 segundos
+    }, 15000); // Actualiza cada 15 segundos
 
     // Limpiar el intervalo cuando el componente se desmonte
     return () => clearInterval(interval);

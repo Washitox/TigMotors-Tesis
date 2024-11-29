@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import HeaderUsuario from "./HeaderUsuario"; // Ajusta la ruta según tu estructura de carpetas
-import SidebarUser from "./SidebarUser"; // Ajusta la ruta según tu estructura de carpetas
+import HeaderUsuario from "./HeaderUsuario";
+import SidebarUser from "./SidebarUser";
 import axios from "axios";
 
 function PerfilUser() {

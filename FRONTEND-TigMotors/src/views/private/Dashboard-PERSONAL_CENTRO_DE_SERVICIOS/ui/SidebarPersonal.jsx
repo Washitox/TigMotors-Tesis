@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { FaBriefcase, FaFileAlt, FaUser, FaUsers } from "react-icons/fa";
 
 function SidebarPersonal() {
-  const location = useLocation(); // Obtener la ruta actual para resaltar el enlace activo.
+  const location = useLocation();
 
   // Opciones del menú
   const menuItems = [
