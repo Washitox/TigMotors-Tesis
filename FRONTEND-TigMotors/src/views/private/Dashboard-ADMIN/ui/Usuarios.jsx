@@ -17,9 +17,16 @@ function Usuarios() {
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Define showPassword aquí
+  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
 
-  const getToken = () => localStorage.getItem("authToken");
+  const getToken = () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      setErrorMessage("Sesión expirada. Por favor, inicia sesión nuevamente.");
+      return null;
+    }
+    return token;
+  };
 
   const FormError = ({ message }) => (
     <div className="block font-medium text-red-500 text-sm">{message}</div>
@@ -30,31 +37,51 @@ function Usuarios() {
     setSuccessMessage(null);
     setIsSubmitting(true);
 
+    const formattedData = {
+      username: data.username,
+      password: data.password,
+      business_name: data.businessName,
+      email: data.email,
+      phone_number: `+593${data.phoneNumber}`,
+    };
+
     try {
-      const formattedData = {
-        username: data.username,
-        password: data.password,
-        business_name: data.businessName,
-        email: data.email,
-        phone_number: `+593${data.phoneNumber}`,
-      };
+      const token = getToken();
+      if (!token) return; // Si no hay token, detén la ejecución
 
       const response = await axios.post(
         "http://localhost:8085/api/admin/registrar-usuario",
         formattedData,
         {
           headers: {
-            Authorization: `Bearer ${getToken()}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
       );
+
       setSuccessMessage("Usuario registrado... recargue la página");
     } catch (error) {
-      console.error("Error al registrar usuario:", error.response?.data || error.message);
-      setErrorMessage(
-        error.response?.data?.message || "Ocurrió un error. Intente nuevamente."
-      );
+      if (error.response && error.response.data) {
+        const backendErrors = error.response.data;
+        if (backendErrors.password) {
+          setError("password", {
+            type: "server",
+            message: backendErrors.password,
+          });
+        }
+        if (backendErrors.phone_number) {
+          setError("phoneNumber", {
+            type: "server",
+            message: backendErrors.phone_number,
+          });
+        }
+        setErrorMessage(
+          backendErrors.message || "Ocurrió un error inesperado. Intente nuevamente."
+        );
+      } else {
+        setErrorMessage("Error desconocido. Intente nuevamente.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -170,8 +197,9 @@ function Usuarios() {
                       required: "La contraseña es requerida",
                       minLength: { value: 8, message: "Debe tener al menos 8 caracteres" },
                       pattern: {
-                        value: /^(?=.*[A-Z])(?=.*[!@#$&*]).*$/,
-                        message: "Debe contener una mayúscula y un carácter especial",
+                        value: /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[a-z])(?=.*\d).*$/,
+                        message:
+                          "Debe contener una mayúscula, minúscula, un dígito y un carácter especial",
                       },
                     })}
                     className="bg-gray-700 border-gray-600 text-white w-full pr-10"
