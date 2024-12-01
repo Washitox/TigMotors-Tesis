@@ -16,7 +16,7 @@ function PerfilUser() {
   const fetchUserInfo = async () => {
     try {
       const token = getToken();
-      const response = await axios.get("http://localhost:8085/api/admin/me", {
+      const response = await axios.get("http://localhost:8085/api-user/informacion-usuario", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUserInfo(response.data);

@@ -7,7 +7,7 @@ export default function SidebarUser() {
 
   const menuItems = [
     { name: "Trabajos", path: "/user/trabajos", icon: <FaBriefcase /> },
-    { name: "Solicitar Trabajo", path: "/user/solicitar-trabajo", icon: <FaClipboard /> },
+    { name: "Solicitudes para trabajo", path: "/user/solicitar-trabajo", icon: <FaClipboard /> },
     { name: "Perfil", path: "/user/perfil", icon: <FaCog /> },
   ];
 

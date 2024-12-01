@@ -83,7 +83,7 @@ export default function SignIn() {
                 className="bg-gray-800 border-slate-900 text-white"
                 />
                 {errors.username && <FormError message={errors.username.message} />}
-              </fieldset>
+              </fieldset> 
               <fieldset className="space-y-1">
                 <Label htmlFor="password">Contraseña<span className="text-red-500">*</span></Label>
                 <div className="relative">
@@ -107,7 +107,7 @@ export default function SignIn() {
                 </div>
                 {errors.password && <FormError message={errors.password.message} />}
               </fieldset>
-              <Button Button type="submit" color="success" className="w-full">
+              <Button  type="submit" color="success" className="w-full">
                 Iniciar Sesión
               </Button>
               {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}

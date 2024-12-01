@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import HeaderAdmin from "./HeaderAdmin";
 import { useForm } from "react-hook-form";
 import { Input, Label, Button } from "keep-react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaPencilAlt, FaSave } from "react-icons/fa";
 import axios from "axios";
 
 function Usuarios() {
@@ -14,11 +14,37 @@ function Usuarios() {
     setError,
   } = useForm();
 
+
+  const fetchById = async (id) => {
+    try {
+      const token = getToken();
+      const response = await axios.post(
+        "http://localhost:8085/api/admin/buscar-usuario",
+        { id },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      // Si se encuentra, reemplazar las solicitudes con el único resultado
+      setSolicitudes([response.data]);
+    } catch (error) {
+      console.error("Error al buscar usuario por ID:", error);
+      setSolicitudes([]); // Vaciar la tabla si no se encuentra
+    }
+  };
+
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
+  const [showPassword, setShowPassword] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [loadingStates, setLoadingStates] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
+
+  
   const getToken = () => {
     const token = localStorage.getItem("authToken");
     if (!token) {
@@ -27,6 +53,52 @@ function Usuarios() {
     }
     return token;
   };
+
+
+  const fetchUsers = async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
+      const response = await axios.get("http://localhost:8085/api/admin/lista-usuarios", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+    }
+  };
+
+  const fetchByIdOrName = async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
+      if (!isNaN(searchTerm)) {
+        const response = await axios.post(
+          "http://localhost:8085/api/admin/buscar-usuario",
+          { id: parseInt(searchTerm) },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setUsers([response.data]);
+      } else if (searchTerm.trim() !== "") {
+        const filteredUsers = users.filter((user) =>
+          user.username.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setUsers(filteredUsers);
+      } else {
+        fetchUsers();
+      }
+    } catch (error) {
+      console.error("Error al buscar usuario:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+
 
   const FormError = ({ message }) => (
     <div className="block font-medium text-red-500 text-sm">{message}</div>
@@ -61,6 +133,7 @@ function Usuarios() {
       );
 
       setSuccessMessage("Usuario registrado... recargue la página");
+      fetchUsers(); // Actualizar la lista de usuarios después de registrar uno nuevo
     } catch (error) {
       if (error.response && error.response.data) {
         const backendErrors = error.response.data;
@@ -86,6 +159,24 @@ function Usuarios() {
       setIsSubmitting(false);
     }
   };
+
+
+  const handleEdit = (id) => {
+    console.log("Editar usuario con ID:", id);
+    setLoadingStates((prev) => ({ ...prev, [id]: "editing" }));
+  };
+
+  const handleSave = (id) => {
+    console.log("Guardar cambios para usuario con ID:", id);
+    setLoadingStates((prev) => ({ ...prev, [id]: "saved" }));
+  };
+
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+  const paginatedUsers = users.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
 
   return (
     <div className="flex h-screen bg-gray-900 text-white">
@@ -168,7 +259,7 @@ function Usuarios() {
                   <span className="bg-gray-700 text-white px-3 py-2 rounded-l-md">+593</span>
                   <Input
                     id="phoneNumber"
-                    type="text"
+                    type="number"
                     placeholder="Ingrese 9 dígitos"
                     {...register("phoneNumber", {
                       required: "El número celular es requerido",
@@ -227,13 +318,116 @@ function Usuarios() {
             {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
           </div>
 
-          {/* Espacio para la tabla de usuarios */}
+          {/* Tabla de usuarios */}
+
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg flex-1">
-            <h2 className="text-xl font-bold mb-4">Tabla de Usuarios</h2>
-            <p className="text-gray-400">
-              Aquí aparecerá la lista de usuarios registrados.
-            </p>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Tabla de Usuarios</h2>
+              <div className="flex gap-2">
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                  className="bg-gray-700 text-white p-2 rounded"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={15}>15</option>
+                </select>
+                <button
+                  onClick={fetchUsers}
+                  className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+                >
+                  Recargar
+                </button>
+                <input
+                  type="text"
+                  placeholder="Buscar por ID o Nombre"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="bg-gray-700 text-white p-2 rounded"
+                />
+                <button
+                  onClick={fetchByIdOrName}
+                  className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
+                >
+                  Buscar
+                </button>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-gray-700">
+                  <tr>
+                    <th className="p-3">ID</th>
+                    <th className="p-3">Usuario</th>
+                    <th className="p-3">Empresa</th>
+                    <th className="p-3">Correo</th>
+                    <th className="p-3">Teléfono</th>
+                    <th className="p-3">Acciones</th>
+                    <th className="p-3">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedUsers.map((user, idx) => (
+                    <tr
+                      key={user.id}
+                      className={idx % 2 === 0 ? "bg-gray-600" : "bg-gray-700"}
+                    >
+                      <td className="p-3">{user.id}</td>
+                      <td className="p-3">{user.username}</td>
+                      <td className="p-3">{user.businessName}</td>
+                      <td className="p-3">{user.email}</td>
+                      <td className="p-3">{user.phoneNumber}</td>
+                      <td className="p-3 flex space-x-2">
+                        <button
+                          onClick={() => handleEdit(user.id)}
+                          className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
+                        >
+                          <FaPencilAlt />
+                        </button>
+                        <button
+                          onClick={() => handleSave(user.id)}
+                          className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
+                        >
+                          <FaSave />
+                        </button>
+                      </td>
+                      <td className="p-3">
+                        {loadingStates[user.id] === "editing" && (
+                          <span className="text-yellow-500">Editando...</span>
+                        )}
+                        {loadingStates[user.id] === "saved" && (
+                          <span className="text-green-500">Guardado</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex justify-between items-center mt-4">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+                className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded"
+              >
+                Anterior
+              </button>
+              <span>
+                Página {currentPage} de {totalPages}
+              </span>
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(currentPage + 1)}
+                className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded"
+              >
+                Siguiente
+              </button>
+            </div>
           </div>
+
         </main>
       </div>
     </div>
