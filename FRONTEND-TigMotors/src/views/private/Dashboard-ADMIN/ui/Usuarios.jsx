@@ -38,11 +38,11 @@ function Usuarios() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [users, setUsers] = useState([]);
-  const [loadingStates, setLoadingStates] = useState({});
+  const [editingRow, setEditingRow] = useState({});
+  const [editedValues, setEditedValues] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-
 
   
   const getToken = () => {
@@ -54,6 +54,7 @@ function Usuarios() {
     return token;
   };
 
+  
 
   const fetchUsers = async () => {
     try {
@@ -67,6 +68,50 @@ function Usuarios() {
       console.error("Error al obtener usuarios:", error);
     }
   };
+
+  const updateUserData = async (id, field, value) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        setErrorMessage("Token de autenticación no encontrado.");
+        return;
+      }
+  
+      if (!field || !value) {
+        setErrorMessage("Campo o valor no válido.");
+        return;
+      }
+  
+      const requestData = { userId: id };
+      requestData[field] = value;
+  
+      console.log("Datos enviados al backend:", requestData);
+  
+      await axios.post(
+        "http://localhost:8085/api/admin/actualizar-datos-user",
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      setSuccessMessage(`Usuario con ID ${id} actualizado correctamente.`);
+      setEditingRow((prev) => ({ ...prev, [id]: false }));
+      fetchUsers(); // Recargar los usuarios actualizados
+    } catch (error) {
+      console.error("Error al actualizar el usuario:", error);
+      const backendMessage = error.response?.data?.message;
+      setErrorMessage(
+        backendMessage || `Error al actualizar el usuario con ID ${id}.`
+      );
+    }
+  };
+  
+
+  
 
   const fetchByIdOrName = async () => {
     try {
@@ -319,7 +364,6 @@ function Usuarios() {
           </div>
 
           {/* Tabla de usuarios */}
-
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg flex-1">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Tabla de Usuarios</h2>
@@ -346,12 +390,6 @@ function Usuarios() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="bg-gray-700 text-white p-2 rounded"
                 />
-                <button
-                  onClick={fetchByIdOrName}
-                  className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
-                >
-                  Buscar
-                </button>
               </div>
             </div>
 
@@ -365,7 +403,6 @@ function Usuarios() {
                     <th className="p-3">Correo</th>
                     <th className="p-3">Teléfono</th>
                     <th className="p-3">Acciones</th>
-                    <th className="p-3">Estado</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -375,31 +412,58 @@ function Usuarios() {
                       className={idx % 2 === 0 ? "bg-gray-600" : "bg-gray-700"}
                     >
                       <td className="p-3">{user.id}</td>
-                      <td className="p-3">{user.username}</td>
-                      <td className="p-3">{user.businessName}</td>
-                      <td className="p-3">{user.email}</td>
-                      <td className="p-3">{user.phoneNumber}</td>
-                      <td className="p-3 flex space-x-2">
+                      {["username", "businessName", "email", "phoneNumber"].map((field) => (
+                        <td className="p-3" key={field}>
+                          <div className="flex items-center gap-2">
+                            {editingRow[user.id] ? (
+                              <input
+                                type="text"
+                                value={editedValues[user.id]?.[field] || user[field]}
+                                onChange={(e) =>
+                                  setEditedValues((prev) => ({
+                                    ...prev,
+                                    [user.id]: {
+                                      ...prev[user.id],
+                                      [field]: e.target.value,
+                                    },
+                                  }))
+                                }
+                                className="flex-1 bg-gray-700 text-white p-2 rounded border border-gray-600"
+                              />
+                            ) : (
+                              <span className="flex-1">{user[field]}</span>
+                            )}
+                            <button
+                              onClick={() =>
+                                setEditingRow((prev) => ({
+                                  ...prev,
+                                  [user.id]: !prev[user.id],
+                                }))
+                              }
+                              className="text-blue-400 hover:text-blue-600"
+                            >
+                              <FaPencilAlt />
+                            </button>
+                          </div>
+                        </td>
+                      ))}
+                      <td className="p-3">
                         <button
-                          onClick={() => handleEdit(user.id)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded"
-                        >
-                          <FaPencilAlt />
-                        </button>
-                        <button
-                          onClick={() => handleSave(user.id)}
+                          onClick={() => {
+                            if (editingRow[user.id]) {
+                              // Guardar cambios
+                              const updatedField = editedValues[user.id];
+                              if (updatedField) {
+                                const [field, value] = Object.entries(updatedField)[0];
+                                updateUserData(user.id, field, value);
+                              }
+                            }
+                            setEditingRow((prev) => ({ ...prev, [user.id]: false }));
+                          }}
                           className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
                         >
                           <FaSave />
                         </button>
-                      </td>
-                      <td className="p-3">
-                        {loadingStates[user.id] === "editing" && (
-                          <span className="text-yellow-500">Editando...</span>
-                        )}
-                        {loadingStates[user.id] === "saved" && (
-                          <span className="text-green-500">Guardado</span>
-                        )}
                       </td>
                     </tr>
                   ))}
@@ -435,3 +499,4 @@ function Usuarios() {
 }
 
 export default Usuarios;
+

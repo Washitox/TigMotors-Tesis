@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import HeaderUsuario from "./HeaderUsuario";
 import SidebarUser from "./SidebarUser";
 import axios from "axios";
+import { FaEye, FaEyeSlash, FaPencilAlt } from "react-icons/fa";
 
 function PerfilUser() {
   const [userInfo, setUserInfo] = useState({
@@ -10,18 +11,127 @@ function PerfilUser() {
     email: "",
     phoneNumber: "",
   });
+  const [editableFields, setEditableFields] = useState({});
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [passwords, setPasswords] = useState({
+    currentPassword: "",
+    newPassword: "",
+    repeatNewPassword: "",
+  });
+  const [showPasswords, setShowPasswords] = useState({
+    currentPassword: false,
+    newPassword: false,
+    repeatNewPassword: false,
+  });
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const getToken = () => localStorage.getItem("authToken");
 
   const fetchUserInfo = async () => {
     try {
       const token = getToken();
-      const response = await axios.get("http://localhost:8085/api-user/informacion-usuario", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        "http://localhost:8085/api-user/informacion-usuario",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setUserInfo(response.data);
     } catch (error) {
       console.error("Error al obtener la información del usuario:", error);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    if (passwords.newPassword !== passwords.repeatNewPassword) {
+      setErrorMessage("Las contraseñas no coinciden.");
+      return;
+    }
+
+    const requestData = {
+      currentPassword: passwords.currentPassword,
+      newPassword: passwords.newPassword,
+    };
+
+    try {
+      const token = getToken();
+      if (!token) {
+        setErrorMessage("Sesión expirada. Por favor, inicia sesión nuevamente.");
+        return;
+      }
+
+      await axios.post(
+        "http://localhost:8085/api-user/cambiar-contrasena",
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setSuccessMessage("Contraseña cambiada exitosamente.");
+      setPasswords({ currentPassword: "", newPassword: "", repeatNewPassword: "" });
+    } catch (error) {
+      console.error("Error al cambiar la contraseña:", error);
+      setErrorMessage(
+        error.response?.data?.message || "Error al cambiar la contraseña."
+      );
+    }
+  };
+
+  const handleEditField = (field) => {
+    setEditableFields((prev) => ({
+      ...prev,
+      [field]: userInfo[field],
+    }));
+    setIsEditing(true);
+  };
+
+  const handleFieldChange = (field, value) => {
+    setEditableFields((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSaveField = async () => {
+    try {
+      const token = getToken();
+      if (!token) {
+        setErrorMessage("Sesión expirada. Por favor, inicia sesión nuevamente.");
+        return;
+      }
+
+      for (const [key, value] of Object.entries(editableFields)) {
+        const requestData = { [key]: value };
+        await axios.post(
+          "http://localhost:8085/api-user/actualizar-informacion",
+          requestData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+
+      setSuccessMessage("Información actualizada exitosamente.");
+      setEditableFields({});
+      setIsEditing(false);
+      fetchUserInfo();
+    } catch (error) {
+      console.error("Error al actualizar la información:", error);
+      setErrorMessage(
+        error.response?.data?.message || "Error al actualizar la información."
+      );
     }
   };
 
@@ -46,37 +156,128 @@ function PerfilUser() {
 
             {/* Información del perfil */}
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-400">Nombre</label>
-                <div className="p-3 bg-gray-700 rounded-md">{userInfo.username || "N/A"}</div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400">Empresa</label>
-                <div className="p-3 bg-gray-700 rounded-md">
-                  {userInfo.businessName || "No especificado"}
+              {["username", "businessName", "email", "phoneNumber"].map((field) => (
+                <div key={field}>
+                  <label className="block text-sm font-medium text-gray-400">
+                    {field === "username"
+                      ? "Nombre"
+                      : field === "businessName"
+                      ? "Empresa"
+                      : field === "email"
+                      ? "Correo Electrónico"
+                      : "Teléfono"}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    {editableFields[field] !== undefined ? (
+                      <input
+                        type="text"
+                        value={editableFields[field]}
+                        onChange={(e) => handleFieldChange(field, e.target.value)}
+                        className="w-full bg-gray-700 text-white p-2 rounded border border-gray-600"
+                      />
+                    ) : (
+                      <div className="p-3 bg-gray-700 rounded-md flex-1">
+                        {userInfo[field] || "N/A"}
+                      </div>
+                    )}
+                    <button
+                      onClick={() =>
+                        editableFields[field] !== undefined
+                          ? handleSaveField()
+                          : handleEditField(field)
+                      }
+                      className="text-blue-400 hover:text-blue-600"
+                    >
+                      <FaPencilAlt />
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400">Correo Electrónico</label>
-                <div className="p-3 bg-gray-700 rounded-md">{userInfo.email || "N/A"}</div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400">Teléfono</label>
-                <div className="p-3 bg-gray-700 rounded-md">
-                  {userInfo.phoneNumber || "No especificado"}
-                </div>
-              </div>
+              ))}
             </div>
+
+            {/* Botón de guardar */}
+            {isEditing && (
+              <div className="mt-6">
+                <button
+                  onClick={handleSaveField}
+                  className="w-full py-2 px-4 bg-green-500 hover:bg-green-600 rounded-md text-white font-semibold"
+                >
+                  Guardar Información
+                </button>
+              </div>
+            )}
+
+            {/* Mensajes */}
+            {successMessage && (
+              <p className="text-green-500 mt-4 text-center">{successMessage}</p>
+            )}
+            {errorMessage && (
+              <p className="text-red-500 mt-4 text-center">{errorMessage}</p>
+            )}
 
             {/* Opciones de acciones */}
             <div className="mt-6 space-y-4">
-              <button className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 rounded-md text-white font-semibold">
-                Editar Perfil
-              </button>
-              <button className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 rounded-md text-white font-semibold">
+              <button
+                className="w-full py-2 px-4 bg-red-500 hover:bg-red-600 rounded-md text-white font-semibold"
+                onClick={() => setShowChangePassword(!showChangePassword)}
+              >
                 Cambiar Contraseña
               </button>
             </div>
+
+            {/* Formulario de cambiar contraseña */}
+            {showChangePassword && (
+              <div className="mt-6">
+                <h2 className="text-xl font-bold mb-4 text-center">Cambiar Contraseña</h2>
+                <div className="space-y-4">
+                  {["currentPassword", "newPassword", "repeatNewPassword"].map((key) => (
+                    <div key={key}>
+                      <label className="block text-sm font-medium text-gray-400">
+                        {key === "currentPassword"
+                          ? "Contraseña Actual"
+                          : key === "newPassword"
+                          ? "Nueva Contraseña"
+                          : "Repetir Nueva Contraseña"}
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPasswords[key] ? "text" : "password"}
+                          value={passwords[key]}
+                          onChange={(e) =>
+                            setPasswords({ ...passwords, [key]: e.target.value })
+                          }
+                          className="w-full bg-gray-700 text-white p-2 rounded border border-gray-600"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowPasswords((prev) => ({
+                              ...prev,
+                              [key]: !prev[key],
+                            }))
+                          }
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+                        >
+                          {showPasswords[key] ? <FaEyeSlash /> : <FaEye />}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    onClick={handlePasswordChange}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
+                  >
+                    Verificar y Cambiar Contraseña
+                  </button>
+                  {successMessage && (
+                    <p className="text-green-500 mt-4 text-center">{successMessage}</p>
+                  )}
+                  {errorMessage && (
+                    <p className="text-red-500 mt-4 text-center">{errorMessage}</p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </main>
       </div>
