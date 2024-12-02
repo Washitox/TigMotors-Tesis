@@ -65,7 +65,7 @@ function PerfilUser() {
         return;
       }
 
-      await axios.post(
+      await axios.put(
         "http://localhost:8085/api-user/cambiar-contrasena",
         requestData,
         {
@@ -111,7 +111,7 @@ function PerfilUser() {
 
       for (const [key, value] of Object.entries(editableFields)) {
         const requestData = { [key]: value };
-        await axios.post(
+        await axios.put(
           "http://localhost:8085/api-user/actualizar-informacion",
           requestData,
           {

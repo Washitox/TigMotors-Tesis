@@ -66,7 +66,17 @@ export default function Equipo() {
             </div>
           ))}
         </div>
-      </div>
+
+        {/* Línea divisoria */}
+      <hr className="my-8 border-gray-700" />
+
+        <p className="text-gray-400 text-sm">
+              © {new Date().getFullYear()} Tig Motors. Todos los derechos
+              reservados.
+            </p>
+              </div>
+
+      
     </section>
   );
 }

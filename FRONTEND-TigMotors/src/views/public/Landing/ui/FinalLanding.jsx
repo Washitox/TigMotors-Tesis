@@ -85,10 +85,7 @@ export default function FinalLanding() {
 
         {/* Derechos reservados */}
         <div className="flex flex-col lg:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} Tig Motors. Todos los derechos
-            reservados.
-          </p>
+          
           <div className="flex space-x-4 mt-4 lg:mt-0">
             <a
               href="#"

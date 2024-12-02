@@ -1,6 +1,20 @@
 import React from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+// Crear un ícono personalizado
+const customIcon = L.icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png", // Cambia por el ícono que prefieras
+  iconSize: [40, 40], // Tamaño del ícono
+  iconAnchor: [20, 40], // Punto donde el ícono está anclado
+  popupAnchor: [0, -40], // Ajusta la posición del popup
+});
 
 export default function InformaciónTig() {
+  // Ajustar coordenadas para ubicarlo más hacia la derecha en la intersección
+  const position = [-0.14183332935872697, -78.43794066608825]; // Ajusta según sea necesario
+
   return (
     <section className="py-12 bg-gray-800 text-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,21 +49,36 @@ export default function InformaciónTig() {
 
           {/* Mapa */}
           <div className="w-full lg:w-1/2 flex justify-center">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1307.8563607448345!2d-78.43855867147545!3d-0.14182305889018226!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d58f001afacd75%3A0x8d3d5f60602f4db2!2sTigMotors!5e1!3m2!1ses!2sec!4v1732635442341!5m2!1ses!2sec"
-              width="100%"
-              height="450"
-              style={{ border: "0", borderRadius: "10px" }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Ubicación de Tig Motors"
-            ></iframe>
+            <div
+              style={{
+                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
+                borderRadius: "15px",
+                overflow: "hidden",
+                width: "100%",
+              }}
+            >
+              <MapContainer
+                center={position}
+                zoom={16} // Aumentar el zoom para mayor precisión
+                style={{
+                  height: "450px",
+                  width: "100%",
+                }}
+              >
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <Marker position={position} icon={customIcon}>
+                  <Popup>
+                    <div className="text-center">
+                      <strong>TigMotors</strong>
+                      <p>Sector Gualo, Quito</p>
+                    </div>
+                  </Popup>
+                </Marker>
+              </MapContainer>
+            </div>
           </div>
         </div>
       </div>
     </section>
   );
 }
-
-

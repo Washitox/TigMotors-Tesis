@@ -14,25 +14,6 @@ function Usuarios() {
     setError,
   } = useForm();
 
-
-  const fetchById = async (id) => {
-    try {
-      const token = getToken();
-      const response = await axios.post(
-        "http://localhost:8085/api/admin/buscar-usuario",
-        { id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      // Si se encuentra, reemplazar las solicitudes con el único resultado
-      setSolicitudes([response.data]);
-    } catch (error) {
-      console.error("Error al buscar usuario por ID:", error);
-      setSolicitudes([]); // Vaciar la tabla si no se encuentra
-    }
-  };
-
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,7 +25,6 @@ function Usuarios() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  
   const getToken = () => {
     const token = localStorage.getItem("authToken");
     if (!token) {
@@ -54,8 +34,6 @@ function Usuarios() {
     return token;
   };
 
-  
-
   const fetchUsers = async () => {
     try {
       const token = getToken();
@@ -63,9 +41,11 @@ function Usuarios() {
       const response = await axios.get("http://localhost:8085/api/admin/lista-usuarios", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("Usuarios obtenidos:", response.data);
       setUsers(response.data);
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
+      setErrorMessage("Error al obtener usuarios.");
     }
   };
 
@@ -76,18 +56,21 @@ function Usuarios() {
         setErrorMessage("Token de autenticación no encontrado.");
         return;
       }
-  
+
       if (!field || !value) {
         setErrorMessage("Campo o valor no válido.");
         return;
       }
-  
-      const requestData = { userId: id };
-      requestData[field] = value;
-  
-      console.log("Datos enviados al backend:", requestData);
-  
-      await axios.post(
+
+      // Crear el objeto requestData con validación
+      const requestData = {
+        userId: id,
+        [field]: value,
+      };
+
+      console.log("Datos enviados al backend para actualizar usuario:", requestData);
+
+      const response = await axios.put(
         "http://localhost:8085/api/admin/actualizar-datos-user",
         requestData,
         {
@@ -97,7 +80,9 @@ function Usuarios() {
           },
         }
       );
-  
+
+      console.log("Respuesta del backend tras la actualización:", response.data);
+
       setSuccessMessage(`Usuario con ID ${id} actualizado correctamente.`);
       setEditingRow((prev) => ({ ...prev, [id]: false }));
       fetchUsers(); // Recargar los usuarios actualizados
@@ -109,15 +94,14 @@ function Usuarios() {
       );
     }
   };
-  
-
-  
 
   const fetchByIdOrName = async () => {
     try {
       const token = getToken();
       if (!token) return;
+
       if (!isNaN(searchTerm)) {
+        console.log("Buscando usuario por ID:", searchTerm);
         const response = await axios.post(
           "http://localhost:8085/api/admin/buscar-usuario",
           { id: parseInt(searchTerm) },
@@ -125,8 +109,10 @@ function Usuarios() {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+        console.log("Usuario encontrado:", response.data);
         setUsers([response.data]);
       } else if (searchTerm.trim() !== "") {
+        console.log("Buscando usuarios por nombre:", searchTerm);
         const filteredUsers = users.filter((user) =>
           user.username.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -136,14 +122,13 @@ function Usuarios() {
       }
     } catch (error) {
       console.error("Error al buscar usuario:", error);
+      setErrorMessage("Error al buscar usuario.");
     }
   };
 
   useEffect(() => {
     fetchUsers();
   }, []);
-
-
 
   const FormError = ({ message }) => (
     <div className="block font-medium text-red-500 text-sm">{message}</div>
@@ -162,9 +147,11 @@ function Usuarios() {
       phone_number: `+593${data.phoneNumber}`,
     };
 
+    console.log("Datos enviados para registrar usuario:", formattedData);
+
     try {
       const token = getToken();
-      if (!token) return; // Si no hay token, detén la ejecución
+      if (!token) return;
 
       const response = await axios.post(
         "http://localhost:8085/api/admin/registrar-usuario",
@@ -177,43 +164,31 @@ function Usuarios() {
         }
       );
 
+      console.log("Usuario registrado exitosamente:", response.data);
+
       setSuccessMessage("Usuario registrado... recargue la página");
-      fetchUsers(); // Actualizar la lista de usuarios después de registrar uno nuevo
+      fetchUsers();
     } catch (error) {
-      if (error.response && error.response.data) {
-        const backendErrors = error.response.data;
-        if (backendErrors.password) {
-          setError("password", {
-            type: "server",
-            message: backendErrors.password,
-          });
-        }
-        if (backendErrors.phone_number) {
-          setError("phoneNumber", {
-            type: "server",
-            message: backendErrors.phone_number,
-          });
-        }
-        setErrorMessage(
-          backendErrors.message || "Ocurrió un error inesperado. Intente nuevamente."
-        );
-      } else {
-        setErrorMessage("Error desconocido. Intente nuevamente.");
+      console.error("Error al registrar usuario:", error);
+      const backendErrors = error.response?.data;
+      if (backendErrors?.password) {
+        setError("password", {
+          type: "server",
+          message: backendErrors.password,
+        });
       }
+      if (backendErrors?.phone_number) {
+        setError("phoneNumber", {
+          type: "server",
+          message: backendErrors.phone_number,
+        });
+      }
+      setErrorMessage(
+        backendErrors?.message || "Ocurrió un error inesperado. Intente nuevamente."
+      );
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-
-  const handleEdit = (id) => {
-    console.log("Editar usuario con ID:", id);
-    setLoadingStates((prev) => ({ ...prev, [id]: "editing" }));
-  };
-
-  const handleSave = (id) => {
-    console.log("Guardar cambios para usuario con ID:", id);
-    setLoadingStates((prev) => ({ ...prev, [id]: "saved" }));
   };
 
   const totalPages = Math.ceil(users.length / itemsPerPage);
@@ -221,7 +196,6 @@ function Usuarios() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
 
   return (
     <div className="flex h-screen bg-gray-900 text-white">
@@ -492,6 +466,7 @@ function Usuarios() {
             </div>
           </div>
 
+
         </main>
       </div>
     </div>
@@ -499,4 +474,3 @@ function Usuarios() {
 }
 
 export default Usuarios;
-
