@@ -20,7 +20,7 @@ function TrabajosUser() {
       const token = getToken();
       if (!token) return;
 
-      const response = await axios.get("http://localhost:8085/api-user/listar-trabajos", {
+      const response = await axios.get("http://localhost:8085/api-user/historial-solicitud", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTrabajos(response.data);

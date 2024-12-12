@@ -55,6 +55,7 @@ export default function DashboardAdminView() {
               <Route path="/admin/solicitudes-registro" element={<SolicitudesRegistro />} />
               <Route path="/admin/registrar-trabajo" element={<RegistrarTrabajo />} />
               <Route path="/admin/perfil" element={<Perfil />} />
+              
             </Route>
           </Routes>
         </main>

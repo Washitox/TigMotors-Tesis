@@ -6,7 +6,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function Estatus() {
-  const [statusData, setStatusData] = useState({ pendiente: 0, porAprobar: 0 });
+  const [statusData, setStatusData] = useState({ Pendiente: 0, Aprobado: 0 });
   const [isFetching, setIsFetching] = useState(false);
 
   // Obtener el token de almacenamiento local
@@ -21,10 +21,10 @@ export default function Estatus() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Mapear los datos según la respuesta del backend
+      // Mapear los datos directamente desde la respuesta del backend
       setStatusData({
-        pendiente: response.data["Pendiente"] || 0,
-        porAprobar: response.data["Por Aprobar"] || 0,
+        Pendiente: response.data["Pendiente"] || 0,
+        Aprobado: response.data["Aprobado"] || 0,
       });
     } catch (error) {
       console.error("Error al obtener el estado de los usuarios:", error);
@@ -48,11 +48,11 @@ export default function Estatus() {
 
   // Configuración de la gráfica
   const chartData = {
-    labels: ["Aprovados", "Por Aprobar"],
+    labels: ["Aprobado", "Pendiente"], // Etiquetas para las barras
     datasets: [
       {
         label: "Usuarios",
-        data: [statusData.porAprobar, statusData.pendiente],
+        data: [statusData.Aprobado, statusData.Pendiente], // Ordenado según las etiquetas
         backgroundColor: ["#4CAF50", "#FFC107"], // Colores para las barras
         borderColor: ["#388E3C", "#FF8F00"], // Color de borde
         borderWidth: 1,

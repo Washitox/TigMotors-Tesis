@@ -41,38 +41,31 @@ function Usuarios() {
       const response = await axios.get("http://localhost:8085/api/admin/lista-usuarios", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Usuarios obtenidos:", response.data);
-      setUsers(response.data);
+      setUsers(response.data); // Actualiza el estado con los usuarios obtenidos
+      setCurrentPage(1); // Reinicia la paginación a la primera página
+      setSearchTerm(""); // Limpia el campo de búsqueda
+      console.log("Usuarios actualizados:", response.data);
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
       setErrorMessage("Error al obtener usuarios.");
     }
   };
-
-  const updateUserData = async (id, field, value) => {
+  
+  const deleteUser = async (id) => {
     try {
       const token = getToken();
       if (!token) {
         setErrorMessage("Token de autenticación no encontrado.");
         return;
       }
-
-      if (!field || !value) {
-        setErrorMessage("Campo o valor no válido.");
-        return;
+  
+      if (!window.confirm(`¿Estás seguro de que deseas eliminar al usuario con ID ${id}?`)) {
+        return; // Cancelar la acción si el usuario no confirma
       }
-
-      // Crear el objeto requestData con validación
-      const requestData = {
-        userId: id,
-        [field]: value,
-      };
-
-      console.log("Datos enviados al backend para actualizar usuario:", requestData);
-
-      const response = await axios.put(
-        "http://localhost:8085/api/admin/actualizar-datos-user",
-        requestData,
+  
+      await axios.post(
+        "http://localhost:8085/api/admin/users/delete",
+        { userId: id }, // Enviar el cuerpo en formato JSON
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -80,20 +73,81 @@ function Usuarios() {
           },
         }
       );
-
-      console.log("Respuesta del backend tras la actualización:", response.data);
-
-      setSuccessMessage(`Usuario con ID ${id} actualizado correctamente.`);
-      setEditingRow((prev) => ({ ...prev, [id]: false }));
-      fetchUsers(); // Recargar los usuarios actualizados
+  
+      setSuccessMessage(`Usuario con ID ${id} eliminado correctamente.`);
+      fetchUsers(); // Actualiza la lista de usuarios
     } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
-      const backendMessage = error.response?.data?.message;
+      console.error("Error al eliminar usuario:", error);
       setErrorMessage(
-        backendMessage || `Error al actualizar el usuario con ID ${id}.`
+        error.response?.data?.message || "Error al eliminar el usuario. Intente nuevamente."
       );
     }
   };
+  
+  
+
+  const updateUserData = async (id, field, value) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        setErrorMessage("Token de autenticación no encontrado.");
+        return Promise.reject(); // Retorna un error si no hay token
+      }
+  
+      if (!field || value === undefined || value === null) {
+        setErrorMessage("Campo o valor no válido.");
+        console.error("Campo o valor inválido:", { field, value });
+        return Promise.reject();
+      }
+  
+      const fieldMapping = {
+        businessName: "business_name",
+        phoneNumber: "phone_Number",
+      };
+      const backendField = fieldMapping[field] || field;
+  
+      const requestData = {
+        userId: id,
+        [backendField]: value,
+      };
+  
+      console.log("Datos enviados al backend para actualizar usuario:", requestData);
+  
+      await axios.put("http://localhost:8085/api/admin/actualizar-datos-user", requestData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      console.log("Datos enviados al backend:", requestData);
+  
+      await axios.put("http://localhost:8085/api/admin/actualizar-datos-user", requestData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      setSuccessMessage(`Usuario con ID ${id} actualizado correctamente.`);
+      setErrorMessage(null); // Limpia mensajes de error
+    } catch (error) {
+      console.error("Error al actualizar el usuario:", error);
+      setErrorMessage(error.response?.data?.message || "Error al actualizar el usuario.");
+
+    // Extraer mensaje del backend si existe
+    const backendMessage = error.response?.data?.message;
+
+    if (backendMessage) {
+      setErrorMessage(backendMessage); // Mostrar mensaje específico del backend
+    } else {
+      setErrorMessage(
+        `Error al actualizar el usuario con ID ${id}. Por favor, intente nuevamente.`
+      ); // Mensaje genérico en caso de fallo
+    }
+  }
+};
+  
 
   const fetchByIdOrName = async () => {
     try {
@@ -144,7 +198,7 @@ function Usuarios() {
       password: data.password,
       business_name: data.businessName,
       email: data.email,
-      phone_number: `+593${data.phoneNumber}`,
+      phone_number: `+593${data.phoneNumber.replace(/\s+/g, "")}`, // Eliminar espacios y concatenar prefijo
     };
 
     console.log("Datos enviados para registrar usuario:", formattedData);
@@ -210,7 +264,8 @@ function Usuarios() {
         {/* Contenido de la página */}
         <main className="p-6 flex gap-6">
           {/* Sección del formulario de registro */}
-          <div className="bg-gray-800 p-4 rounded-lg shadow-lg w-1/4">
+          <div className="bg-gray-800 p-4 rounded-lg shadow-lg"
+            style={{ width: "300px", flexShrink: 0 }}>
             <h1 className="text-xl font-bold mb-4">Registrar Usuario</h1>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* Username */}
@@ -338,33 +393,37 @@ function Usuarios() {
           </div>
 
           {/* Tabla de usuarios */}
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg flex-1">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg flex-1 overflow-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Tabla de Usuarios</h2>
               <div className="flex gap-2">
-                <select
-                  value={itemsPerPage}
-                  onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                  className="bg-gray-700 text-white p-2 rounded"
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={15}>15</option>
-                </select>
-                <button
-                  onClick={fetchUsers}
-                  className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-                >
-                  Recargar
-                </button>
-                <input
-                  type="text"
-                  placeholder="Buscar por ID o Nombre"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-gray-700 text-white p-2 rounded"
-                />
-              </div>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                className="bg-gray-700 text-white p-2 rounded"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+              </select>
+              <button
+                onClick={() => {
+                  fetchUsers(); // Realizar la solicitud para actualizar la lista
+                  setSearchTerm(""); // Reiniciar el campo de búsqueda
+                  setCurrentPage(1); // Reiniciar la paginación a la primera página
+                }}
+                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+              >
+                Recargar
+              </button>
+              <input
+                type="text"
+                placeholder="Buscar por ID o Nombre"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-gray-700 text-white p-2 rounded"
+              />
+            </div>
             </div>
 
             <div className="overflow-x-auto">
@@ -407,37 +466,45 @@ function Usuarios() {
                             ) : (
                               <span className="flex-1">{user[field]}</span>
                             )}
-                            <button
-                              onClick={() =>
-                                setEditingRow((prev) => ({
-                                  ...prev,
-                                  [user.id]: !prev[user.id],
-                                }))
-                              }
-                              className="text-blue-400 hover:text-blue-600"
-                            >
-                              <FaPencilAlt />
-                            </button>
+                            
                           </div>
                         </td>
                       ))}
                       <td className="p-3">
-                        <button
-                          onClick={() => {
-                            if (editingRow[user.id]) {
-                              // Guardar cambios
-                              const updatedField = editedValues[user.id];
-                              if (updatedField) {
-                                const [field, value] = Object.entries(updatedField)[0];
-                                updateUserData(user.id, field, value);
-                              }
+                      <button
+                        onClick={() =>
+                          setEditingRow((prev) => ({
+                            ...prev,
+                            [user.id]: !prev[user.id],
+                          }))
+                        }
+                        className="text-blue-400 hover:text-blue-600 mr-2" // Margen derecho para separarlo hacia la izquierda
+                      >
+                        <FaPencilAlt />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (editingRow[user.id]) {
+                            // Guardar cambios
+                            const updatedField = editedValues[user.id];
+                            if (updatedField) {
+                              const [field, value] = Object.entries(updatedField)[0];
+                              updateUserData(user.id, field, value).then(() => {
+                                fetchUsers(); // Actualizar la lista de usuarios después de guardar
+                              });
                             }
-                            setEditingRow((prev) => ({ ...prev, [user.id]: false }));
-                          }}
-                          className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded"
-                        >
-                          <FaSave />
-                        </button>
+                          }
+                          setEditingRow((prev) => ({ ...prev, [user.id]: false })); // Terminar la edición
+                        }}
+                        className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded ml-2"
+                      >
+                        <FaSave />
+                      </button>
+                      <button
+                        onClick={() => deleteUser(user.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded ml-2">
+                        Eliminar
+                      </button>
                       </td>
                     </tr>
                   ))}
